@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">Travel_tales</string>
+    <string name="app_name">TravelTales</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="select_location">Select Location</string>
+    <string name="submit">Submit</string>
+    <string name="search_here">Search Here</string>
+    <string name="address">Address</string>
+    <string name="date_hint">Date</string>
+    <string name="add_journal">Add Journal</string>
+    <string name="my_landmarks">My Landmarks</string>
+    <string name="captured_moments">Captured Moments</string>
+    <string name="no_images_to_display">No Images To Display</string>
 </resources>
