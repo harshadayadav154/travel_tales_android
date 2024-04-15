@@ -20,6 +20,7 @@ import com.example.travel_tales.databinding.ActivityJournalGalleryBinding;
 import com.example.travel_tales.db.DBHelper;
 import com.example.travel_tales.utility.NotificationUtility;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -31,6 +32,7 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
     private DBHelper dbHelper;
 
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 100;
+    private ImageAdapterGridView imageAdapterGridView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +74,7 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
                 binding.txtNoImages.setVisibility(View.VISIBLE);
             } else {
                 // If images exist, populating the GridView with images
-                ImageAdapterGridView imageAdapterGridView = new ImageAdapterGridView(this,380,380);
+                imageAdapterGridView = new ImageAdapterGridView(this, 380, 380);
                 imageAdapterGridView.setImagePaths(imagePaths);
                 binding.journalImageGrid.setAdapter(imageAdapterGridView);
                 binding.txtNoImages.setVisibility(View.GONE);
@@ -109,8 +111,10 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent(getApplicationContext(), FullScreenImageActivity.class);
-        intent.putExtra("id", position);
+        intent.putExtra("position", position);
+        intent.putExtra("imagePaths", (Serializable) imageAdapterGridView.getImagePaths());
         startActivity(intent);
     }
+
 }
 

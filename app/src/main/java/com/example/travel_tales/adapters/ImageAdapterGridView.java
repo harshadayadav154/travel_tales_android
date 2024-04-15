@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * @author Nabin Ghatani 2024-04-13
  */
-public class ImageAdapterGridView extends BaseAdapter {
+public class ImageAdapterGridView extends BaseAdapter implements Serializable {
     private final Context mContext;
     private List<String> imagePaths;
     private int width;
