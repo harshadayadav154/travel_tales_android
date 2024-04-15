@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -70,12 +71,11 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
                 binding.journalImageGrid.setVisibility(View.GONE);
                 binding.txtNoImages.setVisibility(View.VISIBLE);
             } else {
-                // If images exist, populate the GridView with images
-                ImageAdapterGridView imageAdapterGridView = new ImageAdapterGridView(this);
+                // If images exist, populating the GridView with images
+                ImageAdapterGridView imageAdapterGridView = new ImageAdapterGridView(this,380,380);
                 imageAdapterGridView.setImagePaths(imagePaths);
                 binding.journalImageGrid.setAdapter(imageAdapterGridView);
                 binding.txtNoImages.setVisibility(View.GONE);
-                // Notify the adapter that the data has changed
             }
         } catch (Exception e) {
             Log.e("JournalGalleryActivity", "Error loading images", e);

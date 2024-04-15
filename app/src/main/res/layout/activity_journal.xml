@@ -65,7 +65,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"        android:hint="@string/description"
+        android:layout_marginEnd="20dp"
+        android:hint="@string/description"
         android:textColorHint="@color/black">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -75,25 +76,33 @@
             android:textColor="@color/black" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!--ImageView to preview the selected image-->
-    <ImageView
-        android:id="@+id/imgPreview"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:scaleType="fitXY"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"/>
-
-    <TextView
-        android:id="@+id/txt_image_count"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="5dp"
-        android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <GridView
+            android:id="@+id/imgPreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:columnWidth="100dp"
+            android:gravity="center"
+            android:minHeight="80dp"
+            android:numColumns="auto_fit"
+            android:stretchMode="columnWidth" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:indeterminateTint="?colorPrimary" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btn_upload_image"

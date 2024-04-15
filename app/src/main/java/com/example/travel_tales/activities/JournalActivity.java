@@ -11,11 +11,13 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.GridView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.travel_tales.adapters.ImageAdapterGridView;
 import com.example.travel_tales.databinding.ActivityJournalBinding;
 import com.example.travel_tales.db.DBHelper;
 import com.example.travel_tales.models.JournalEntry;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 /**
  * @author Nabin Ghatani 2024-04-13
@@ -45,15 +48,13 @@ public class JournalActivity extends AppCompatActivity implements View.OnClickLi
     private Location location;
 
     private DBHelper dbHelper;
-    private List<Uri> uriList;
     private List<String> imagePaths;
 
     // constant to compare
     // the activity result code
     private final int SELECT_PICTURE_REQUEST = 200;
     private static final String TAG = "JournalActivity";
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
+    private ExecutorService executorService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +69,14 @@ public class JournalActivity extends AppCompatActivity implements View.OnClickLi
 
     // Initialize components such as DBHelper, Geocoder
     private void initializeComponents() {
-        binding.imgPreview.setVisibility(View.GONE);
         dbHelper = new DBHelper(getApplicationContext());
         geocoder = new Geocoder(this);
         location = new Location();
-        uriList = new ArrayList<>();
         imagePaths = new ArrayList<>();
+        executorService = Executors.newSingleThreadExecutor();
+
+        binding.imgPreview.setVisibility(View.GONE);
+        binding.progressBar.setVisibility(View.GONE);
     }
 
     // Register event listeners for UI components
@@ -105,6 +108,7 @@ public class JournalActivity extends AppCompatActivity implements View.OnClickLi
     // this function is triggered when
     // the Select Image Button is clicked
     void imageChooser() {
+        this.imagePaths = new ArrayList<>(); // resetting the value
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
@@ -127,40 +131,60 @@ public class JournalActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    // Method to process multiple images received through ClipData
     private void processImages(ClipData clipData) {
         executorService.execute(() -> {
+            // Update UI to indicate processing
+            runOnUiThread(this::switchToProgressBarView);
+
+            // Process each image in the ClipData
             for (int i = 0; i < clipData.getItemCount(); i++) {
                 ClipData.Item item = clipData.getItemAt(i);
                 Uri uri = item.getUri();
                 try {
+                    // Get bitmap from URI and save to internal storage
                     Bitmap bitmap = ImageUtility.getBitmapFromUri(JournalActivity.this, uri);
-                    String imageName = ImageUtility.generateImageName();
-                    String imagePath = ImageUtility.saveImageToInternalStorage(JournalActivity.this, bitmap, imageName);
-                    if (imagePath != null) {
+                    String imagePath = ImageUtility.saveImageToInternalStorage(JournalActivity.this, bitmap, uri.getLastPathSegment());
+                    if (imagePath != null && !imagePaths.contains(imagePath)) {
                         imagePaths.add(imagePath);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+
             // Update UI on the main thread after processing all images
             runOnUiThread(this::updateUI);
         });
     }
 
+
+    /**
+     * Switches the UI to a progress bar view by hiding the image preview and showing the progress bar.
+     */
+    private void switchToProgressBarView() {
+        binding.imgPreview.setVisibility(View.GONE);
+        binding.progressBar.setVisibility(View.VISIBLE);
+    }
+
+    // Method to process a single image received as a Uri
     private void processImage(Uri uri) {
         executorService.execute(() -> {
+            // Updating UI to indicate processing
+            runOnUiThread(this::switchToProgressBarView);
+
             try {
+                // Getting bitmap from URI and save to internal storage
                 Bitmap bitmap = ImageUtility.getBitmapFromUri(JournalActivity.this, uri);
-                String imageName = generateImageName();
-                String imagePath = ImageUtility.saveImageToInternalStorage(JournalActivity.this, bitmap, imageName);
-                if (imagePath != null) {
+                String imagePath = ImageUtility.saveImageToInternalStorage(JournalActivity.this, bitmap, uri.getLastPathSegment());
+                if (imagePath != null && !imagePaths.contains(imagePath)) {
                     imagePaths.add(imagePath);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            // Update UI on the main thread after processing the image
+
+            // Updating UI on the main thread after processing the image
             runOnUiThread(this::updateUI);
         });
     }
@@ -169,10 +193,20 @@ public class JournalActivity extends AppCompatActivity implements View.OnClickLi
     private void updateUI() {
         runOnUiThread(() -> {
             if (!imagePaths.isEmpty()) {
-                binding.imgPreview.setImageURI(Uri.parse(imagePaths.get(0)));
-                String txt = imagePaths.size() > 1 ? " images." : " image.";
-                binding.txtImageCount.setText("Selected " + imagePaths.size() + txt);
+                imagePaths = imagePaths.stream().distinct().collect(Collectors.toList());
+
+                // Showing preview image and hiding progress bar
                 binding.imgPreview.setVisibility(View.VISIBLE);
+                binding.progressBar.setVisibility(View.GONE);
+
+                // Limiting the number of images to be displayed to at most 6
+                int endIndex = Math.min(imagePaths.size(), 6);
+                List<String> imagesToShow = imagePaths.subList(0, endIndex);
+
+                // Creating and setting up the adapter to display images in a GridView
+                ImageAdapterGridView imageAdapterGridView = new ImageAdapterGridView(this, 300, 225);
+                imageAdapterGridView.setImagePaths(imagesToShow);
+                binding.imgPreview.setAdapter(imageAdapterGridView);
             }
         });
     }
@@ -188,7 +222,7 @@ public class JournalActivity extends AppCompatActivity implements View.OnClickLi
         searchLocation(); // Searching for location coordinates
 
         JournalEntry journalEntry = new JournalEntry();
-        journalEntry.setUserId(1); //TODO fix this later
+        journalEntry.setUserId(1); //todo - fix this later
         journalEntry.setTitle(Objects.requireNonNull(binding.editTextTitle.getText()).toString().trim());
         journalEntry.setDescription(Objects.requireNonNull(binding.editTextDescription.getText()).toString().trim());
         journalEntry.setDate(DateUtility.parseStringToDate(Objects.requireNonNull(binding.editTextDate.getText()).toString()));

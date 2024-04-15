@@ -23,11 +23,15 @@ import java.util.stream.Collectors;
 public class ImageAdapterGridView extends BaseAdapter {
     private final Context mContext;
     private List<String> imagePaths;
+    private int width;
+    private int height;
 
     // Constructor to initialize the adapter with context
-    public ImageAdapterGridView(Context context) {
+    public ImageAdapterGridView(Context context, int width, int height) {
         mContext = context;
         this.imagePaths = new ArrayList<>();
+        this.width = width;
+        this.height = height;
     }
 
     /**
@@ -76,12 +80,11 @@ public class ImageAdapterGridView extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
-
         // If convertView is null, inflate a new ImageView
         if (convertView == null) {
             imageView = new ImageView(mContext);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setLayoutParams(new GridView.LayoutParams(380, 380));
+            imageView.setLayoutParams(new GridView.LayoutParams(width, height));
             imageView.setPadding(16, 16, 16, 16);
         } else {
             // Reusing convertView if available
@@ -97,7 +100,7 @@ public class ImageAdapterGridView extends BaseAdapter {
             File imgFile = new File(imagePath);
 
             // Checking if the file exists
-            if(imgFile.exists()){
+            if (imgFile.exists()) {
                 // Use Glide to load the image into the ImageView
                 Glide.with(mContext).load(imgFile).into(imageView);
             }
@@ -109,6 +112,5 @@ public class ImageAdapterGridView extends BaseAdapter {
         // Returning the configured ImageView
         return imageView;
     }
-
 }
 

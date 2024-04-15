@@ -44,7 +44,7 @@ public class FullScreenImageActivity extends AppCompatActivity {
         int position = intent.getExtras().getInt("id");
 
         // Creating an instance of ImageAdapterGridView to retrieve the list of image paths
-        ImageAdapterGridView adapterGridView = new ImageAdapterGridView(this);
+        ImageAdapterGridView adapterGridView = new ImageAdapterGridView(this,380,380);
 
         // Retrieving the list of image paths
         List<String> imagePaths = adapterGridView.getImagePaths();
