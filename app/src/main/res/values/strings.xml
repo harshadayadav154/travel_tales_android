@@ -9,8 +9,8 @@
     <string name="address">Address</string>
     <string name="date_hint">Date</string>
     <string name="add_journal">Add Journal</string>
-    <string name="my_landmarks">My Landmarks</string>
-    <string name="captured_moments">Captured Moments</string>
+    <string name="landmarks">Landmarks</string>
+    <string name="memories">Memories</string>
     <string name="no_images_to_display">No Images To Display</string>
     <string name="home">Home</string>
     <string name="search">Search</string>
