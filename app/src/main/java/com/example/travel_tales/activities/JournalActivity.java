@@ -1,23 +1,15 @@
 package com.example.travel_tales.activities;
 
 import static com.example.travel_tales.utility.ImageUtility.generateImageName;
-import static com.example.travel_tales.utility.ImageUtility.getBitmapFromUri;
-import static com.example.travel_tales.utility.ImageUtility.saveImageToInternalStorage;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.ClipData;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -33,23 +25,14 @@ import com.example.travel_tales.utility.ImageUtility;
 import com.example.travel_tales.utility.NotificationUtility;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 /**
  * @author Nabin Ghatani 2024-04-13

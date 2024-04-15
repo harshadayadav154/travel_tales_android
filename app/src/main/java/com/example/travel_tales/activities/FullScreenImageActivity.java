@@ -13,6 +13,9 @@ import com.example.travel_tales.databinding.ActivityFullScreenImageBinding;
 import java.io.File;
 import java.util.List;
 
+/**
+ * @author Nabin Ghatani 2024-04-15
+ */
 public class FullScreenImageActivity extends AppCompatActivity {
     ActivityFullScreenImageBinding binding;
 

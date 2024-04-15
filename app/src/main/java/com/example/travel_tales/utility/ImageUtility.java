@@ -15,9 +15,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * @author Nabin Ghatani 2024-04-15
+ */
 public class ImageUtility {
     private static final String TAG = "ImageUtility";
 
+    /**
+     * Converts a URI to a Bitmap.
+     *
+     * @param context The context.
+     * @param uri     The URI of the image.
+     * @return The Bitmap object.
+     * @throws IOException If an I/O error occurs.
+     */
     public static Bitmap getBitmapFromUri(Context context, Uri uri) throws IOException {
         InputStream inputStream = context.getContentResolver().openInputStream(uri);
         if (inputStream != null) {
@@ -40,14 +51,25 @@ public class ImageUtility {
         }
     }
 
-    // Method to generate a unique image name
+    /**
+     * Generates a unique image name based on the current timestamp.
+     *
+     * @return The generated image name.
+     */
     public static String generateImageName() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
         String timeStamp = sdf.format(new Date());
         return "IMG_" + timeStamp + ".png";
     }
 
-    // Method to save image to internal storage
+    /**
+     * Saves a Bitmap image to internal storage.
+     *
+     * @param context      The context.
+     * @param bitmapImage  The Bitmap image to save.
+     * @param imageName    The name of the image file.
+     * @return The absolute path of the saved image file.
+     */
     public static String saveImageToInternalStorage(Context context, Bitmap bitmapImage, String imageName) {
         File directory = createImageDirectoryInInternalStorage(context);
         File filePath = new File(directory, imageName);
@@ -70,7 +92,12 @@ public class ImageUtility {
         }
     }
 
-    // Method to create image directory in internal storage
+    /**
+     * Creates a directory for storing images in internal storage.
+     *
+     * @param context The context.
+     * @return The directory File object.
+     */
     public static File createImageDirectoryInInternalStorage(Context context) {
         File imageDir = new File(context.getFilesDir(), "images");
         if (!imageDir.exists()) {
