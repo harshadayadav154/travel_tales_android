@@ -1,7 +1,5 @@
 package com.example.travel_tales.activities;
 
-import static com.example.travel_tales.utility.ImageUtility.generateImageName;
-
 import android.app.DatePickerDialog;
 import android.content.ClipData;
 import android.content.Intent;
@@ -11,7 +9,6 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.GridView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
