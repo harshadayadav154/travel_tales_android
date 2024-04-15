@@ -12,4 +12,12 @@
     <string name="my_landmarks">My Landmarks</string>
     <string name="captured_moments">Captured Moments</string>
     <string name="no_images_to_display">No Images To Display</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="cont">Continue</string>
+    <string name="slide_1_title">Add Journal</string>
+    <string name="slide_2_title">Add your landmarks</string>
+    <string name="slide_3_title">Capture Your Moment</string>
 </resources>
