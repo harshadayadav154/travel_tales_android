@@ -1,10 +1,12 @@
 package com.example.travel_tales.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,12 +20,11 @@ import com.example.travel_tales.db.DBHelper;
 import com.example.travel_tales.utility.NotificationUtility;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Nabin Ghatani 2024-04-14
  */
-public class JournalGalleryActivity extends AppCompatActivity implements View.OnClickListener {
+public class JournalGalleryActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private ActivityJournalGalleryBinding binding;
     private DBHelper dbHelper;
@@ -48,19 +49,13 @@ public class JournalGalleryActivity extends AppCompatActivity implements View.On
      * Initializes UI components and checks permissions to load images from storage.
      */
     private void initializeComponents() {
-        // Check if the app has permission to read external storage
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted, request it from the user
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    REQUEST_CODE_STORAGE_PERMISSION);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_CODE_STORAGE_PERMISSION);
         } else {
-            // Permission is granted, load images from storage
             loadImagesFromStorage();
         }
     }
+
 
     /**
      * Load images from storage and display them in the GridView.
@@ -69,20 +64,21 @@ public class JournalGalleryActivity extends AppCompatActivity implements View.On
         try {
             dbHelper = new DBHelper(getApplicationContext());
             // Fetch image URIs from the database
-            List<String> uriList = dbHelper.getImagePathsByUserId(1); // Fix this later for user id
-            if (uriList.isEmpty()) {
+            List<String> imagePaths = dbHelper.getImagePathsByUserId(1); // Fix this later for user id
+            if (imagePaths.isEmpty()) {
                 // If no images, hide the GridView and show a message
                 binding.journalImageGrid.setVisibility(View.GONE);
                 binding.txtNoImages.setVisibility(View.VISIBLE);
             } else {
                 // If images exist, populate the GridView with images
-                ImageAdapterGridView imageAdapterGridView = new ImageAdapterGridView(this, uriList.stream().map(Uri::parse).collect(Collectors.toList()));
+                ImageAdapterGridView imageAdapterGridView = new ImageAdapterGridView(this);
+                imageAdapterGridView.setImagePaths(imagePaths);
                 binding.journalImageGrid.setAdapter(imageAdapterGridView);
                 binding.txtNoImages.setVisibility(View.GONE);
                 // Notify the adapter that the data has changed
-                imageAdapterGridView.notifyDataSetChanged();
             }
         } catch (Exception e) {
+            Log.e("JournalGalleryActivity", "Error loading images", e);
             NotificationUtility.showNotification(getApplicationContext(), "Unable to show images");
         }
     }
@@ -91,31 +87,30 @@ public class JournalGalleryActivity extends AppCompatActivity implements View.On
      * Handle the result of the permission request.
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_STORAGE_PERMISSION) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, load images from storage
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 loadImagesFromStorage();
             } else {
-                // Permission denied, handle it gracefully
                 Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
+
     /**
      * Register event listeners for UI components.
      */
     private void registerEventListeners() {
-        // Register event listeners for UI components if needed
+        this.binding.journalImageGrid.setOnItemClickListener(this);
     }
 
     @Override
-    public void onClick(View v) {
-        // Handle clicks on UI components if needed
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent = new Intent(getApplicationContext(), FullScreenImageActivity.class);
+        intent.putExtra("id", position);
+        startActivity(intent);
     }
 }
 

@@ -57,8 +57,8 @@ public class DBHelper extends SQLiteOpenHelper {
     // Journal Entries table create statement
     private static final String CREATE_TABLE_JOURNAL_ENTRIES = "CREATE TABLE " + TABLE_JOURNAL_ENTRIES + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + COL_CREATED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP,"
-            + COL_UPDATED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP,"
+            + COL_CREATED_AT + " DATE,"
+            + COL_UPDATED_AT + " DATE,"
             + KEY_USER_ID + " INTEGER,"
             + COL_TITLE + " TEXT NOT NULL,"
             + COL_DESCRIPTION + " TEXT,"
@@ -96,31 +96,40 @@ public class DBHelper extends SQLiteOpenHelper {
     /**
      * Inserts a new journal into the database.
      *
-     * @param entry - Journal of the user
+     * @param journalEntry - Journal of the user
      * @return true if the insertion was successful, false otherwise.
      */
-    public boolean insertJournalEntry(JournalEntry entry) {
+    public boolean insertJournalEntry(JournalEntry journalEntry) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+
         values.put(COL_CREATED_AT, DateUtility.getCurrentDateTime());
         values.put(COL_UPDATED_AT, DateUtility.getCurrentDateTime());
-        values.put(KEY_USER_ID, entry.getUserId());
-        values.put(COL_TITLE, entry.getTitle());
-        values.put(COL_DESCRIPTION, entry.getDescription());
-        values.put(COL_DATE, DateUtility.formatDateToString(entry.getDate()));
-        // Setting location information
-        Location location = entry.getLocation();
+
+
+        // Setting other values from the JournalEntry object
+        values.put(KEY_USER_ID, journalEntry.getUserId());
+        values.put(COL_TITLE, journalEntry.getTitle());
+        values.put(COL_DESCRIPTION, journalEntry.getDescription());
+        values.put(COL_DATE, DateUtility.formatDateToString(journalEntry.getDate()));
+
+        // Setting location information if available
+        Location location = journalEntry.getLocation();
         if (location != null) {
             values.put(COL_LOCATION_NAME, location.getName());
             values.put(COL_LATITUDE, location.getLatitude());
             values.put(COL_LONGITUDE, location.getLongitude());
         }
-        values.put(COL_IMAGE_PATHS, TextUtils.join(",", entry.getImagePaths())); // Converting list of image paths to comma-separated string
 
+        // Convert list of image paths to comma-separated string and set in the ContentValues
+        values.put(COL_IMAGE_PATHS, TextUtils.join(",", journalEntry.getImagePaths()));
+
+        // Insert the values into the database
         long result = db.insert(TABLE_JOURNAL_ENTRIES, null, values);
+
+        // Check if insertion was successful
         return result != -1;
     }
-
 
     /**
      * Getting a journal entry by its ID.
@@ -143,8 +152,8 @@ public class DBHelper extends SQLiteOpenHelper {
         if (c != null && c.moveToFirst()) {
             journalEntry = new JournalEntry();
             journalEntry.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-            journalEntry.setCreatedAt(new Date(c.getLong(c.getColumnIndex(COL_CREATED_AT))));
-            journalEntry.setUpdatedAt(new Date(c.getLong(c.getColumnIndex(COL_UPDATED_AT))));
+            journalEntry.setCreatedAt(DateUtility.parseStringToDate(c.getString(c.getColumnIndex(COL_CREATED_AT))));
+            journalEntry.setUpdatedAt(DateUtility.parseStringToDate(c.getString(c.getColumnIndex(COL_UPDATED_AT))));
             journalEntry.setUserId(c.getInt(c.getColumnIndex(KEY_USER_ID)));
             journalEntry.setTitle(c.getString(c.getColumnIndex(COL_TITLE)));
             journalEntry.setDescription(c.getString(c.getColumnIndex(COL_DESCRIPTION)));
@@ -259,29 +268,36 @@ public class DBHelper extends SQLiteOpenHelper {
      * @return A list of image paths associated with the user.
      */
     public List<String> getImagePathsByUserId(int userId) {
-        SQLiteDatabase db = this.getReadableDatabase();
         List<String> imagePaths = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
 
-        // Query to retrieve the image paths for the specified journal entry ID
-        String selectQuery = "SELECT " + COL_IMAGE_PATHS + " FROM " + TABLE_JOURNAL_ENTRIES +
-                " WHERE " + KEY_USER_ID + " = ?";
+        try {
+            // Query to retrieve the image paths for the specified user ID
+            String selectQuery = "SELECT " + COL_IMAGE_PATHS + " FROM " + TABLE_JOURNAL_ENTRIES +
+                    " WHERE " + KEY_USER_ID + " = ?";
 
-        // Executing the query with the journal entry ID parameter
-        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId)});
+            // Executing the query with the user ID parameter
+            cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId)});
 
-        // Checking if the cursor is not null and move it to the first row
-        if (cursor != null && cursor.moveToFirst()) {
-            // Getting the image paths string from the cursor
-            @SuppressLint("Range") String imagePathString = cursor.getString(cursor.getColumnIndex(COL_IMAGE_PATHS));
-            // Checking if the image path string is not null
-            if (imagePathString != null) {
-                // Splitting the comma-separated string into individual image paths
-                String[] pathsArray = imagePathString.split(",");
-                // Adding each path to the list of image paths
-                Collections.addAll(imagePaths, pathsArray);
+            // Checking if the cursor has results
+            if (cursor != null && cursor.moveToFirst()) {
+                // Getting the image paths string from the cursor
+                @SuppressLint("Range") String imagePathString = cursor.getString(cursor.getColumnIndex(COL_IMAGE_PATHS));
+                if (imagePathString != null && !imagePathString.isEmpty()) {
+                    // Splitting the comma-separated string into individual image paths
+                    String[] pathsArray = imagePathString.split(",");
+                    // Adding each path to the list of image paths
+                    Collections.addAll(imagePaths, pathsArray);
+                }
             }
-            // Closing the cursor
-            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Closing the cursor if not null
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         // Returning the list of image paths
         return imagePaths;

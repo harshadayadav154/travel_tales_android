@@ -1,13 +1,23 @@
 package com.example.travel_tales.activities;
 
+import static com.example.travel_tales.utility.ImageUtility.generateImageName;
+import static com.example.travel_tales.utility.ImageUtility.getBitmapFromUri;
+import static com.example.travel_tales.utility.ImageUtility.saveImageToInternalStorage;
+
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.ClipData;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -19,14 +29,26 @@ import com.example.travel_tales.db.DBHelper;
 import com.example.travel_tales.models.JournalEntry;
 import com.example.travel_tales.models.Location;
 import com.example.travel_tales.utility.DateUtility;
+import com.example.travel_tales.utility.ImageUtility;
 import com.example.travel_tales.utility.NotificationUtility;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -41,10 +63,14 @@ public class JournalActivity extends AppCompatActivity implements View.OnClickLi
 
     private DBHelper dbHelper;
     private List<Uri> uriList;
+    private List<String> imagePaths;
 
     // constant to compare
     // the activity result code
-    int SELECT_PICTURE_REQUEST = 200;
+    private final int SELECT_PICTURE_REQUEST = 200;
+    private static final String TAG = "JournalActivity";
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +90,7 @@ public class JournalActivity extends AppCompatActivity implements View.OnClickLi
         geocoder = new Geocoder(this);
         location = new Location();
         uriList = new ArrayList<>();
+        imagePaths = new ArrayList<>();
     }
 
     // Register event listeners for UI components
@@ -102,39 +129,75 @@ public class JournalActivity extends AppCompatActivity implements View.OnClickLi
         startActivityForResult(Intent.createChooser(intent, "Select Pictures"), SELECT_PICTURE_REQUEST);
     }
 
-    @SuppressLint("SetTextI18n")
+
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == SELECT_PICTURE_REQUEST) {
-            // Check if multiple images are selected
-            if (data.getClipData() != null) {
-                ClipData clipData = data.getClipData();
-                ArrayList<Uri> imageUris = new ArrayList<>();
-                // Looping through the selected images
-                for (int i = 0; i < clipData.getItemCount(); i++) {
-                    ClipData.Item item = clipData.getItemAt(i);
-                    Uri uri = item.getUri();
-                    imageUris.add(uri);
-                }
-                if (!imageUris.isEmpty()) {
-                    this.uriList.addAll(imageUris);
-                    // updating the preview image in the layout
-                    binding.imgPreview.setImageURI(imageUris.get(0));
-                    String txt = imageUris.size() > 1 ? " images." : " image.";
-                    binding.txtImageCount.setText("Selected " + imageUris.size() + txt);
-                    binding.imgPreview.setVisibility(View.VISIBLE);
-                }
-            } else if (data.getData() != null) {
-                // Single image is selected
+        if (resultCode == RESULT_OK && requestCode == SELECT_PICTURE_REQUEST && data != null) {
+            ClipData clipData = data.getClipData();
+            if (clipData != null) {
+                processImages(clipData);
+            } else {
                 Uri uri = data.getData();
-                this.uriList.add(uri);
-                // updating the preview image in the layout
-                binding.imgPreview.setImageURI(uri);
-                binding.txtImageCount.setText("Selected one image.");
-                binding.imgPreview.setVisibility(View.VISIBLE);
+                processImage(uri);
             }
         }
+    }
+
+    private void processImages(ClipData clipData) {
+        executorService.execute(() -> {
+            for (int i = 0; i < clipData.getItemCount(); i++) {
+                ClipData.Item item = clipData.getItemAt(i);
+                Uri uri = item.getUri();
+                try {
+                    Bitmap bitmap = ImageUtility.getBitmapFromUri(JournalActivity.this, uri);
+                    String imageName = ImageUtility.generateImageName();
+                    String imagePath = ImageUtility.saveImageToInternalStorage(JournalActivity.this, bitmap, imageName);
+                    if (imagePath != null) {
+                        imagePaths.add(imagePath);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            // Update UI on the main thread after processing all images
+            runOnUiThread(this::updateUI);
+        });
+    }
+
+    private void processImage(Uri uri) {
+        executorService.execute(() -> {
+            try {
+                Bitmap bitmap = ImageUtility.getBitmapFromUri(JournalActivity.this, uri);
+                String imageName = generateImageName();
+                String imagePath = ImageUtility.saveImageToInternalStorage(JournalActivity.this, bitmap, imageName);
+                if (imagePath != null) {
+                    imagePaths.add(imagePath);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // Update UI on the main thread after processing the image
+            runOnUiThread(this::updateUI);
+        });
+    }
+
+    // Method to update UI after processing images
+    private void updateUI() {
+        runOnUiThread(() -> {
+            if (!imagePaths.isEmpty()) {
+                binding.imgPreview.setImageURI(Uri.parse(imagePaths.get(0)));
+                String txt = imagePaths.size() > 1 ? " images." : " image.";
+                binding.txtImageCount.setText("Selected " + imagePaths.size() + txt);
+                binding.imgPreview.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        executorService.shutdown();
     }
 
     // Processing form submission
@@ -146,7 +209,7 @@ public class JournalActivity extends AppCompatActivity implements View.OnClickLi
         journalEntry.setTitle(Objects.requireNonNull(binding.editTextTitle.getText()).toString().trim());
         journalEntry.setDescription(Objects.requireNonNull(binding.editTextDescription.getText()).toString().trim());
         journalEntry.setDate(DateUtility.parseStringToDate(Objects.requireNonNull(binding.editTextDate.getText()).toString()));
-        journalEntry.setImagePaths(uriList.stream().map(Uri::toString).collect(Collectors.toList()));
+        journalEntry.setImagePaths(imagePaths);
         if (location != null) {
             journalEntry.setLocation(location);
         }
