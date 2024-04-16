@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Move to the next screen
                 binding.viewPager.setCurrentItem(current);
                 // Change button text to "Continue"
-                binding.btnNext.setText(R.string.cont);
+
             }
             else{
                 launchHomeScreen();

@@ -35,7 +35,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initialize() {
-        homeBinding.button.setOnClickListener(this);
+        homeBinding.todoButton.setOnClickListener(this);
         homeBinding.mapButton.setOnClickListener(this);
         homeBinding.capturedImages.setOnClickListener(this);
 
@@ -82,9 +82,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == homeBinding.button.getId()) {
-            /*Intent intent = new Intent(this, JournalActivity.class);
-            startActivity(intent);*/
+        if (v.getId() == homeBinding.todoButton.getId()) {
+            Intent intent = new Intent(this, TodoActivity.class);
+            startActivity(intent);
         } else if (v.getId() == homeBinding.mapButton.getId()) {
             Intent intent = new Intent(this, MapActivity.class);
             startActivity(intent);
@@ -110,7 +110,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // Set listener for bottom navigation
         homeBinding.bottomNavView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.nav_search) {
-                //todo
+
             } else if (item.getItemId() == R.id.nav_bottom_home) {
                 Intent intent = new Intent(this, HomeActivity.class);
                 startActivity(intent);

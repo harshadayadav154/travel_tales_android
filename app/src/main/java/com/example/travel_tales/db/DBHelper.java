@@ -10,13 +10,13 @@ import android.text.TextUtils;
 
 import com.example.travel_tales.models.JournalEntry;
 import com.example.travel_tales.models.Location;
+import com.example.travel_tales.models.Todo;
 import com.example.travel_tales.utility.DateUtility;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,6 +34,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Table Names
     private static final String TABLE_JOURNAL_ENTRIES = "JournalEntries";
+
+    private static final String TABLE_TODO = "Todo";
 
     // Common column names
     private static final String KEY_ID = "id";
@@ -53,6 +55,11 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COL_LONGITUDE = "longitude";
     private static final String COL_IMAGE_PATHS = "image_paths";
 
+    // TODO table - column names
+    private static final String COL_ID = "id";
+    private static final String COL_TODO_TITLE = "Title";
+    private static final String COL_STATUS = "Status";
+
     // Table Create Statements
     // Journal Entries table create statement
     private static final String CREATE_TABLE_JOURNAL_ENTRIES = "CREATE TABLE " + TABLE_JOURNAL_ENTRIES + "("
@@ -67,6 +74,12 @@ public class DBHelper extends SQLiteOpenHelper {
             + COL_LATITUDE + " REAL,"
             + COL_LONGITUDE + " REAL,"
             + COL_IMAGE_PATHS + " TEXT" + ")";
+    private static final String CREATE_TABLE_TODO = "CREATE TABLE " + TABLE_TODO + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_USER_ID + " INTEGER,"
+            + COL_TODO_TITLE + " TEXT,"
+            + COL_STATUS + " REAL" + ")";
+
 
     /**
      * Constructor
@@ -80,12 +93,15 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // creating required tables
+
+        db.execSQL(CREATE_TABLE_TODO);
         db.execSQL(CREATE_TABLE_JOURNAL_ENTRIES);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TODO);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_JOURNAL_ENTRIES);
         // create new tables
         onCreate(db);
@@ -340,5 +356,95 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         db.close();
         return distinctLocations;
+    }
+
+    // ------------------------ "TODO" table methods ----------------//
+
+    /**
+     * Inserts a new todo into the database.
+     *
+     * @param toDO - todo of the user
+     */
+
+    public void insertTodo(Todo toDO){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COL_TODO_TITLE, toDO.getTodoTitle());
+        cv.put(KEY_USER_ID, 1);
+        cv.put(COL_STATUS, 0);
+        db.insert(TABLE_TODO, null, cv);
+    }
+
+    /**
+     * Updates a Todo in the database.
+     *
+     * @param id- unique id
+     * @param todo- todo name to update
+     */
+
+    public void updateTodo(int id, String todo){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COL_TODO_TITLE, todo);
+        db.update(TABLE_TODO, cv, "ID=?", new String[]{String.valueOf(id)});
+    }
+
+    /**
+     * Updates a Todo in the database.
+     *
+     * @param id- unique id
+     * @param status- todo status to update
+     */
+
+    public void updateStatus(int id, int status){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COL_STATUS, status);
+        db.update(TABLE_TODO, cv, "ID=?", new String[]{String.valueOf(id)});
+    }
+
+    /**
+     * delete a Todo record from database.
+     *
+     * @param id- unique id
+     */
+    public void deleteTodo(int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_TODO, "ID=?", new String[]{String.valueOf(id)});
+    }
+
+    /**
+     * Retrieves a list of todos
+     *
+     * @param userId The ID of the user for which to retrieve todo.
+     * @return A list of all todos.
+     */
+    @SuppressLint("Range")
+    public List<Todo> getAllTodos(int userId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = null;
+        List<Todo> todoList = new ArrayList<>();
+
+        db.beginTransaction();
+        try{
+            // Define your query
+            String query = "SELECT * FROM " + TABLE_TODO + " WHERE " +
+                    KEY_USER_ID + " = ?";
+            cursor =  db.rawQuery(query, new String[]{String.valueOf(userId)});
+            if(cursor != null && cursor.moveToFirst()){
+                do{
+                    Todo todo = new Todo();
+                    todo.setId(cursor.getInt(cursor.getColumnIndex(COL_ID)));
+                    todo.setUser_id(cursor.getInt(cursor.getColumnIndex(KEY_USER_ID)));
+                    todo.setTodoTitle(cursor.getString(cursor.getColumnIndex(COL_TODO_TITLE)));
+                    todo.setStatus(cursor.getInt(cursor.getColumnIndex(COL_STATUS)));
+                    todoList.add(todo);
+                }while ((cursor.moveToNext()));
+            }
+        } finally {
+            db.endTransaction();
+            cursor.close();
+        }
+        return todoList;
     }
 }
