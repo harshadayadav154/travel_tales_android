@@ -234,20 +234,29 @@ public class AddJournalFragment extends Fragment implements View.OnClickListener
         if (getActivity() != null) {
             getActivity().runOnUiThread(() -> {
                 if (!imagePaths.isEmpty()) {
-                    imagePaths = imagePaths.stream().distinct().collect(Collectors.toList());
+                    // Filter out invalid image paths
+                    List<String> validImagePaths = imagePaths.stream()
+                            .filter(ImageUtility::isValidImagePath)
+                            .collect(Collectors.toList());
 
-                    // Showing preview image and hiding progress bar
-                    binding.imgPreview.setVisibility(View.VISIBLE);
-                    binding.progressBar.setVisibility(View.GONE);
+                    if (!validImagePaths.isEmpty()) {
+                        // Showing preview image and hiding progress bar
+                        binding.imgPreview.setVisibility(View.VISIBLE);
+                        binding.progressBar.setVisibility(View.GONE);
 
-                    // Limiting the number of images to be displayed to at most 6
-                    int endIndex = Math.min(imagePaths.size(), 6);
-                    List<String> imagesToShow = imagePaths.subList(0, endIndex);
+                        // Limiting the number of images to be displayed to at most 6
+                        int endIndex = Math.min(validImagePaths.size(), 6);
+                        List<String> imagesToShow = validImagePaths.subList(0, endIndex);
 
-                    // Creating and setting up the adapter to display images in a GridView
-                    GalleryAdapter galleryAdapter = new GalleryAdapter(getContext(), 300, 225);
-                    galleryAdapter.setImagePaths(imagesToShow);
-                    binding.imgPreview.setAdapter(galleryAdapter);
+                        // Creating and setting up the adapter to display images in a GridView
+                        GalleryAdapter galleryAdapter = new GalleryAdapter(getContext(), 300, 225);
+                        galleryAdapter.setImagePaths(imagesToShow);
+                        binding.imgPreview.setAdapter(galleryAdapter);
+                    } else {
+                        // No valid image paths, hide preview and progress bar
+                        binding.imgPreview.setVisibility(View.GONE);
+                        binding.progressBar.setVisibility(View.GONE);
+                    }
                 }
             });
         }

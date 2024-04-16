@@ -2,21 +2,17 @@ package com.example.travel_tales.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.travel_tales.R;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.example.travel_tales.activities.HomeActivity;
 import com.example.travel_tales.adapters.JournalListAdapter;
 import com.example.travel_tales.databinding.FragmentListJournalBinding;
 import com.example.travel_tales.db.DBHelper;
-
-import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -82,7 +78,7 @@ public class ListJournalFragment extends Fragment implements View.OnClickListene
         dbHelper = new DBHelper(requireContext());
 
         // Setting up click listener for the cancel button
-        binding.btnGoToHome.setOnClickListener(this);
+        //binding.btnGoToHome.setOnClickListener(this);
     }
 
     /**
@@ -97,9 +93,9 @@ public class ListJournalFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == this.binding.btnGoToHome.getId()) {
+        /*if (v.getId() == this.binding.btnGoToHome.getId()) {
             Intent intent = new Intent(getContext(), HomeActivity.class);
             startActivity(intent);
-        }
+        }*/
     }
 }

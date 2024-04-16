@@ -33,4 +33,5 @@
     <string name="list_of_journals">List of Journals</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
+    <string name="update">Update</string>
 </resources>

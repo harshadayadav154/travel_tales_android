@@ -16,7 +16,7 @@ import com.example.travel_tales.databinding.ActivityHomeBinding;
 import com.example.travel_tales.fragments.AddJournalFragment;
 import com.example.travel_tales.fragments.DeleteJournalFragment;
 import com.example.travel_tales.fragments.ListJournalFragment;
-import com.example.travel_tales.fragments.UpdateJournalFragment;
+import com.example.travel_tales.fragments.UpdateViewFragment;
 
 import java.util.Objects;
 
@@ -63,7 +63,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             } else if (itemId == R.id.nav_list_journal) {
                 frag = new ListJournalFragment();
             } else if (itemId == R.id.nav_update_journal) {
-                frag = new UpdateJournalFragment();
+                frag = new UpdateViewFragment();
             }
 
             if (frag != null) {
