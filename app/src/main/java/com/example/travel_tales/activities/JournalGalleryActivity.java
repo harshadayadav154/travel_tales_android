@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.travel_tales.R;
 import com.example.travel_tales.adapters.GalleryAdapter;
 import com.example.travel_tales.databinding.ActivityJournalGalleryBinding;
 import com.example.travel_tales.db.DBHelper;
@@ -51,6 +52,7 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
      * Initializes UI components and checks permissions to load images from storage.
      */
     private void initializeComponents() {
+        binding.imageViewNoImg.setVisibility(View.GONE);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_CODE_STORAGE_PERMISSION);
         } else {
@@ -65,8 +67,8 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
     private void loadImagesFromStorage() {
         try {
             dbHelper = new DBHelper(getApplicationContext());
-            // Fetch image URIs from the database
-            List<String> imagePaths = dbHelper.getImagePathsByUserId(1); // Fix this later for user id
+            // Fetching image URIs from the database
+            List<String> imagePaths = dbHelper.getImagePathsByUserId(1); //todo this later for user id
             if (imagePaths.isEmpty()) {
                 switchToEmptyView();
             } else {
@@ -82,14 +84,24 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
         }
     }
 
+    /**
+     * Switches the view to the gallery view where images are displayed.
+     * This method sets the visibility of the image grid to VISIBLE
+     * and hides the "No Images" text view.
+     */
     private void switchToGalleryView() {
         binding.journalImageGrid.setVisibility(View.VISIBLE);
-        binding.txtNoImages.setVisibility(View.GONE);
     }
 
+    /**
+     * Switches the view to the empty view where no images are available.
+     * This method sets the visibility of the image grid to GONE
+     * and displays the "No Images" text view.
+     */
     private void switchToEmptyView() {
         binding.journalImageGrid.setVisibility(View.GONE);
-        binding.txtNoImages.setVisibility(View.VISIBLE);
+        binding.imageViewNoImg.setVisibility(View.VISIBLE);
+        binding.imageViewNoImg.setImageResource(R.drawable.no_image_icn);
     }
 
     /**

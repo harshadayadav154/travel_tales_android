@@ -1,12 +1,16 @@
 package com.example.travel_tales.adapters;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.travel_tales.R;
@@ -50,23 +54,34 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull JournalEntryViewHolder holder, int position) {
-        // Binding data to the views using view binding
+        // Retrieving the journal entry at the given position
         JournalEntry journal = journalList.get(position);
 
-        // Load image asynchronously if available, otherwise set default image
+        // Loading image asynchronously if available, otherwise set default image
         if (!journal.getImagePaths().isEmpty()) {
+            // Asynchronously loading the image using an executor
             executor.execute(() -> {
+                // Decoding the bitmap from the first image path
                 Bitmap bitmap = BitmapFactory.decodeFile(journal.getImagePaths().get(0));
+                // Setting the bitmap on the ImageView on the UI thread
                 holder.binding.imageViewJournal.post(() -> holder.binding.imageViewJournal.setImageBitmap(bitmap));
             });
         } else {
-            // Set the default image on the UI thread
-            holder.binding.imageViewJournal.post(() -> holder.binding.imageViewJournal.setImageResource(R.drawable.no_image_icn));
+            // Setting the default image on the UI thread if no image is available
+            holder.binding.imageViewJournal.post(() -> {
+                try {
+                    Drawable drawable = ContextCompat.getDrawable(holder.binding.imageViewJournal.getContext(), R.drawable.no_image_icn);
+                    holder.binding.imageViewJournal.setImageDrawable(drawable);
+                } catch (Resources.NotFoundException e) {
+                    Log.e("ViewHolder", "Cannot find image", e);
+                }
+            });
         }
 
+        // Setting the title, date, and description of the journal entry
         holder.binding.textViewTitle.setText(journal.getTitle());
-        // Setting date and description
         holder.binding.textViewDate.setText(DateUtility.formatDateToString(journal.getDate()));
+
         // Setting description with scrolling capability
         holder.binding.textViewDescription.setMovementMethod(new ScrollingMovementMethod());
         holder.binding.textViewDescription.setText(journal.getDescription());
