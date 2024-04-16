@@ -2,6 +2,7 @@ package com.example.travel_tales.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 /**
  * @author Nabin Ghatani 2024-04-15
  */
-public class FullScreenImageActivity extends AppCompatActivity {
+public class FullScreenImageActivity extends AppCompatActivity implements View.OnClickListener {
     ActivityFullScreenImageBinding binding;
 
     @Override
@@ -26,6 +27,7 @@ public class FullScreenImageActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         // Initializing the activity
         initialize();
+        registerEventListeners();
     }
 
     /**
@@ -58,6 +60,21 @@ public class FullScreenImageActivity extends AppCompatActivity {
             // Handling the case where image paths or position are not valid
             NotificationUtility.showNotification(this, "Invalid image data");
             finish(); // Finishing the activity if data is invalid
+        }
+    }
+
+    /**
+     * Register event listeners for UI components.
+     */
+    private void registerEventListeners() {
+        this.binding.btnGoToHome.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == this.binding.btnGoToHome.getId()) {
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
         }
     }
 }
