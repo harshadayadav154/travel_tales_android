@@ -12,7 +12,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".fragments.ListStockFragment">
+            tools:context=".fragments.ListJournalFragment">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -40,22 +40,6 @@
 
             </LinearLayout>
         </FrameLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="5dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnGoToHome"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:text="@string/go_to_home"
-                android:textStyle="bold" />
-        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

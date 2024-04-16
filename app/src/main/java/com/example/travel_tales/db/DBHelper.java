@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Helper class for managing database creation and version management.
@@ -154,15 +155,15 @@ public class DBHelper extends SQLiteOpenHelper {
      * Getting a journal entry by its ID.
      * Handles gracefully if the ID is not found.
      *
-     * @param entryId The ID of the journal entry to retrieve.
+     * @param journalId The ID of the journal entry to retrieve.
      * @return The journal entry corresponding to the ID, or null if not found.
      */
     @SuppressLint("Range")
-    public JournalEntry getJournalEntryById(int entryId) throws ParseException {
+    public JournalEntry getJournalEntryById(int journalId) throws ParseException {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT  * FROM " + TABLE_JOURNAL_ENTRIES + " WHERE "
-                + KEY_ID + " = " + entryId;
+                + KEY_ID + " = " + journalId;
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -272,39 +273,46 @@ public class DBHelper extends SQLiteOpenHelper {
         return journalEntries;
     }
 
-
-    /**
-     * Updates a journal entry in the database.
-     *
-     * @param journalEntry - Journal entry to update
-     * @return true if the update was successful, false otherwise.
-     */
-    public boolean updateJournalEntry(JournalEntry journalEntry) {
+    public void updateJournalEntry(JournalEntry journalEntry) {
+        // Open the database for writing
         SQLiteDatabase db = this.getWritableDatabase();
 
+        // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(COL_TITLE, journalEntry.getTitle());
         values.put(COL_DESCRIPTION, journalEntry.getDescription());
         values.put(COL_DATE, DateUtility.formatDateToString(journalEntry.getDate()));
 
-        // Setting location information
+        // Set location information if available
         Location location = journalEntry.getLocation();
         if (location != null) {
             values.put(COL_LOCATION_NAME, location.getName());
             values.put(COL_LATITUDE, location.getLatitude());
             values.put(COL_LONGITUDE, location.getLongitude());
+        } else {
+            // If location is null, clear the location information
+            values.putNull(COL_LOCATION_NAME);
+            values.putNull(COL_LATITUDE);
+            values.putNull(COL_LONGITUDE);
         }
 
-        values.put(COL_UPDATED_AT, System.currentTimeMillis()); // Updating with current timestamp
+        // Filter out empty image paths and join them with commas
+        List<String> validImagePaths = journalEntry.getImagePaths().stream()
+                .filter(imagePath -> !TextUtils.isEmpty(imagePath))
+                .collect(Collectors.toList());
+        values.put(COL_IMAGE_PATHS, String.join(",", validImagePaths));
 
-        // Converting the list of image paths to a single string separated by commas
-        String imagePathString = TextUtils.join(",", journalEntry.getImagePaths());
-        values.put(COL_IMAGE_PATHS, imagePathString);
-
-        int rowsAffected = db.update(TABLE_JOURNAL_ENTRIES, values, KEY_ID + " = ?",
-                new String[]{String.valueOf(journalEntry.getId())});
-
-        return (rowsAffected > 0);
+        // Update the journal entry in the database
+        try {
+            db.update(TABLE_JOURNAL_ENTRIES, values, KEY_ID + " = ? AND " + KEY_USER_ID + " = ?",
+                    new String[]{String.valueOf(journalEntry.getId()), String.valueOf(journalEntry.getUserId())});
+        } catch (Exception e) {
+            // Print the stack trace for debugging
+            e.printStackTrace();
+        } finally {
+            // Close the database
+            db.close();
+        }
     }
 
 

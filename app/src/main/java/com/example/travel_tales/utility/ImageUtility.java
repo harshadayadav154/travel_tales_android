@@ -109,4 +109,21 @@ public class ImageUtility {
         }
         return imageDir;
     }
+
+    /**
+     * Checks if the given image path is valid.
+     *
+     * @param imagePath The path of the image file.
+     * @return True if the image path is valid, false otherwise.
+     */
+    public static boolean isValidImagePath(String imagePath) {
+        // Check if the image path is not null or empty
+        if (imagePath != null && !imagePath.isEmpty()) {
+            // Create a File object from the image path
+            File file = new File(imagePath);
+            // Check if the file exists and is a file (not a directory)
+            return file.exists() && file.isFile();
+        }
+        return false; // Return false for null or empty image paths
+    }
 }
