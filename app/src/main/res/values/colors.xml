@@ -3,6 +3,9 @@
     <color name="primary">#284b63</color>
     <color name="white">#FFFFFF</color>
     <color name="white_secondary">#D9D9D9</color>
+    <color name="green">#3C6E71</color>
     <color name="black">#353535</color>
     <color name="william">#3C6E71</color>
+    <color name="alto">#D9D9D9</color>
+    <color name="red">#ED155E</color>
 </resources>

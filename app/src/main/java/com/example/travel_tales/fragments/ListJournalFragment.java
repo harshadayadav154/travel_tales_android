@@ -1,33 +1,39 @@
 package com.example.travel_tales.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.travel_tales.R;
+import com.example.travel_tales.activities.HomeActivity;
+import com.example.travel_tales.adapters.JournalListAdapter;
+import com.example.travel_tales.databinding.FragmentListJournalBinding;
+import com.example.travel_tales.db.DBHelper;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ListJournalFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListJournalFragment extends Fragment {
+public class ListJournalFragment extends Fragment implements View.OnClickListener {
+    private FragmentListJournalBinding binding;
+    private DBHelper dbHelper;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     public ListJournalFragment() {
-        // Required empty public constructor
     }
 
     /**
@@ -38,7 +44,6 @@ public class ListJournalFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment ListJournalFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static ListJournalFragment newInstance(String param1, String param2) {
         ListJournalFragment fragment = new ListJournalFragment();
         Bundle args = new Bundle();
@@ -60,7 +65,41 @@ public class ListJournalFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list_journal, container, false);
+        binding = FragmentListJournalBinding.inflate(inflater, container, false);
+        View rootView = binding.getRoot();
+
+        init(); // Initializing
+        setupRecyclerView(); // Setting up RecyclerView
+
+        return rootView;
+    }
+
+    /**
+     * Initialize database and set up click listener for cancel button.
+     */
+    private void init() {
+        // Initializing the database helper
+        dbHelper = new DBHelper(requireContext());
+
+        // Setting up click listener for the cancel button
+        binding.btnGoToHome.setOnClickListener(this);
+    }
+
+    /**
+     * Setup RecyclerView with adapter and layout manager.
+     */
+    private void setupRecyclerView() {
+        JournalListAdapter adapter = new JournalListAdapter();
+        adapter.setJournalEntryList(dbHelper.getAllJournalsByUserId(1));//todo fix this later
+        binding.rcView.setAdapter(adapter);
+        binding.rcView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == this.binding.btnGoToHome.getId()) {
+            Intent intent = new Intent(getContext(), HomeActivity.class);
+            startActivity(intent);
+        }
     }
 }

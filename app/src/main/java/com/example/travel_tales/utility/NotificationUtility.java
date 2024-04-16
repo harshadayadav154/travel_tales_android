@@ -33,7 +33,7 @@ public class NotificationUtility {
      * @param operation The record operation (e.g., ADD, UPDATE, DELETE)
      */
     public static void showRecordSuccessNotification(Context context, RecordOperation operation) {
-        String message = "SUCCESS - Record " + operation.name().toLowerCase() + "ed" + " successfully.";
+        String message = "SUCCESS - Record " + operation.name().toLowerCase() + (operation.equals(RecordOperation.ADD) ? "ed": "d") + " successfully.";
         // Showing notification as toast
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }

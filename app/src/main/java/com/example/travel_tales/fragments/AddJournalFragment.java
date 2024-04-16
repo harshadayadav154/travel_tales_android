@@ -20,7 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.travel_tales.adapters.ImageAdapterGridView;
+import com.example.travel_tales.adapters.GalleryAdapter;
 import com.example.travel_tales.databinding.FragmentAddJournalBinding;
 import com.example.travel_tales.db.DBHelper;
 import com.example.travel_tales.models.JournalEntry;
@@ -245,9 +245,9 @@ public class AddJournalFragment extends Fragment implements View.OnClickListener
                     List<String> imagesToShow = imagePaths.subList(0, endIndex);
 
                     // Creating and setting up the adapter to display images in a GridView
-                    ImageAdapterGridView imageAdapterGridView = new ImageAdapterGridView(getContext(), 300, 225);
-                    imageAdapterGridView.setImagePaths(imagesToShow);
-                    binding.imgPreview.setAdapter(imageAdapterGridView);
+                    GalleryAdapter galleryAdapter = new GalleryAdapter(getContext(), 300, 225);
+                    galleryAdapter.setImagePaths(imagesToShow);
+                    binding.imgPreview.setAdapter(galleryAdapter);
                 }
             });
         }

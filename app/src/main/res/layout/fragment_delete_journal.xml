@@ -5,10 +5,43 @@
     android:layout_height="match_parent"
     tools:context=".fragments.DeleteJournalFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_gravity="bottom"
+        android:layout_margin="20dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:text="@string/delete_journal"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <!-- Dropdown menu for selecting titles -->
+        <Spinner
+            android:id="@+id/spinnerJournal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/spinner_border" />
+
+        <Button
+            android:id="@+id/buttonDelete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/delete"
+            android:backgroundTint="@color/red"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </FrameLayout>

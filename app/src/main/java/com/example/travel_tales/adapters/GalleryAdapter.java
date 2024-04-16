@@ -1,7 +1,6 @@
 package com.example.travel_tales.adapters;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,20 +14,19 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
  * @author Nabin Ghatani 2024-04-13
  */
-public class ImageAdapterGridView extends BaseAdapter implements Serializable {
+public class GalleryAdapter extends BaseAdapter implements Serializable {
     private final Context mContext;
     private List<String> imagePaths;
     private int width;
     private int height;
 
     // Constructor to initialize the adapter with context
-    public ImageAdapterGridView(Context context, int width, int height) {
+    public GalleryAdapter(Context context, int width, int height) {
         mContext = context;
         this.imagePaths = new ArrayList<>();
         this.width = width;

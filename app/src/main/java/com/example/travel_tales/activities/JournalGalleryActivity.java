@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.travel_tales.adapters.ImageAdapterGridView;
+import com.example.travel_tales.adapters.GalleryAdapter;
 import com.example.travel_tales.databinding.ActivityJournalGalleryBinding;
 import com.example.travel_tales.db.DBHelper;
 import com.example.travel_tales.utility.NotificationUtility;
@@ -31,7 +31,7 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
     private DBHelper dbHelper;
 
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 100;
-    private ImageAdapterGridView imageAdapterGridView;
+    private GalleryAdapter galleryAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +71,9 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
                 switchToEmptyView();
             } else {
                 // If images exist, populating the GridView with images
-                imageAdapterGridView = new ImageAdapterGridView(this, 380, 380);
-                imageAdapterGridView.setImagePaths(imagePaths);
-                binding.journalImageGrid.setAdapter(imageAdapterGridView);
+                galleryAdapter = new GalleryAdapter(this, 380, 380);
+                galleryAdapter.setImagePaths(imagePaths);
+                binding.journalImageGrid.setAdapter(galleryAdapter);
                 switchToGalleryView();
             }
         } catch (Exception e) {
@@ -120,7 +120,7 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent(getApplicationContext(), FullScreenImageActivity.class);
         intent.putExtra("position", position);
-        intent.putExtra("imagePaths", (Serializable) imageAdapterGridView.getImagePaths());
+        intent.putExtra("imagePaths", (Serializable) galleryAdapter.getImagePaths());
         startActivity(intent);
     }
 
