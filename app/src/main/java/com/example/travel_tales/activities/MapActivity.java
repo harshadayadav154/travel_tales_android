@@ -1,9 +1,10 @@
 package com.example.travel_tales.activities;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.widget.RelativeLayout;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,12 +31,12 @@ import java.util.concurrent.Executors;
 /**
  * @author Nabin Ghatani 2024-04-13
  */
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback, SearchView.OnQueryTextListener, Geocoder.GeocodeListener {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback, SearchView.OnQueryTextListener, Geocoder.GeocodeListener, View.OnClickListener {
     private ActivityMapBinding mapBinding;
     private GoogleMap googleMap;
     private Geocoder geocoder;
-    private String searchQuery;
-    private Location location;
+    private String searchedQuery;
+    private Location searchedLocation;
 
     private List<Location> userLocationList;
     private boolean isInitialMapView;
@@ -45,7 +46,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         super.onCreate(savedInstanceState);
         // Inflating layout using view binding
         mapBinding = ActivityMapBinding.inflate(getLayoutInflater());
-        RelativeLayout ui = mapBinding.getRoot();
+        View ui = mapBinding.getRoot();
         setContentView(ui);
         init();
         registerEventListeners();
@@ -61,16 +62,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
-
         userLocationList = new ArrayList<>();
+
         //initializing geocoder object
         geocoder = new Geocoder(this);
-        this.isInitialMapView = true;
+
+        isInitialMapView = true;
+        //mapBinding.mapView.setVisibility(View.GONE); //todo remove this later
     }
 
     private void registerEventListeners() {
         // Setting up search view listener
         mapBinding.searchView.setOnQueryTextListener(this);
+        mapBinding.btnGoToHome.setOnClickListener(this);
     }
 
 
@@ -82,13 +86,20 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        LatLng lng = null;
+
+        //todo - remove this later
+        /*runOnUiThread(() -> {
+            this.mapBinding.progressBar.setVisibility(View.VISIBLE);
+            this.mapBinding.mapView.setVisibility(View.GONE);
+        });*/
+
+        LatLng firstLocation = null;
 
         // If it's the initial map view, fetching user locations and add markers
         if (isInitialMapView) {
             try (DBHelper dbHelper = new DBHelper(getApplicationContext())) {
                 // Fetching distinct locations by user id
-                userLocationList = dbHelper.getDistinctLocationsByUserId(1);
+                userLocationList = dbHelper.getDistinctLocationsByUserId(1); //todo - fix this later
             } catch (Exception ignore) {
             }
 
@@ -100,24 +111,30 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                     googleMap.addMarker(new MarkerOptions().position(latLng));
                 });
                 // Setting the initial LatLng to the first user location
-                lng = new LatLng(userLocationList.get(0).getLatitude(), userLocationList.get(0).getLongitude());
+                firstLocation = new LatLng(userLocationList.get(0).getLatitude(), userLocationList.get(0).getLongitude());
                 // Setting isInitialMapView to false after initial setup
                 isInitialMapView = false;
             }
         }
 
         // If there's a location set, updating the LatLng
-        if (location != null) {
-            lng = new LatLng(location.getLatitude(), location.getLongitude());
+        if (searchedLocation != null) {
+            firstLocation = new LatLng(searchedLocation.getLatitude(), searchedLocation.getLongitude());
         }
 
         // If there's a LatLng set, adding a marker and animate the camera to the position
-        if (lng != null) {
+        if (firstLocation != null) {
             // Adding a marker to the map at the LatLng
-            googleMap.addMarker(new MarkerOptions().position(lng));
+            googleMap.addMarker(new MarkerOptions().position(firstLocation));
             // Animating the camera to the LatLng with a zoom level of 12
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lng, 12));
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(firstLocation, 12));
         }
+
+        //todo remove this later
+        /*runOnUiThread(() -> {
+            this.mapBinding.progressBar.setVisibility(View.GONE);
+            this.mapBinding.mapView.setVisibility(View.VISIBLE);
+        });*/
     }
 
 
@@ -129,7 +146,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
      */
     @Override
     public boolean onQueryTextSubmit(String query) {
-        this.searchQuery = query;
+        this.searchedQuery = query;
         // Checking if the query is not empty
         if (!query.isEmpty()) {
             ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -147,7 +164,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
      */
     @Override
     public boolean onQueryTextChange(String newText) {
-        this.searchQuery = newText;
+        this.searchedQuery = newText;
         return false;
     }
 
@@ -167,10 +184,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             // Creating a LatLng object with the location's latitude and longitude
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
 
+            searchedLocation = new Location();
+            searchedLocation.setName(searchedQuery);
+            searchedLocation.setLatitude(latLng.latitude);
+            searchedLocation.setLongitude(latLng.longitude);
             // Using runOnUiThread to perform UI operations as GeocodeListener methods might be called from a background thread
             runOnUiThread(() -> {
                 // Adding a marker to the map at the specified position with the given title
-                googleMap.addMarker(new MarkerOptions().position(latLng).title(searchQuery));
+                googleMap.addMarker(new MarkerOptions().position(latLng).title(searchedQuery));
 
                 // Animating the camera to the specified position with a zoom level
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
@@ -188,6 +209,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onError(@Nullable String errorMessage) {
         Geocoder.GeocodeListener.super.onError(errorMessage);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == this.mapBinding.btnGoToHome.getId()) {
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+        }
     }
 }
 

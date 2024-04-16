@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,7 +25,7 @@ import java.util.List;
 /**
  * @author Nabin Ghatani 2024-04-14
  */
-public class JournalGalleryActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class JournalGalleryActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     private ActivityJournalGalleryBinding binding;
     private DBHelper dbHelper;
@@ -69,20 +68,28 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
             // Fetch image URIs from the database
             List<String> imagePaths = dbHelper.getImagePathsByUserId(1); // Fix this later for user id
             if (imagePaths.isEmpty()) {
-                // If no images, hide the GridView and show a message
-                binding.journalImageGrid.setVisibility(View.GONE);
-                binding.txtNoImages.setVisibility(View.VISIBLE);
+                switchToEmptyView();
             } else {
                 // If images exist, populating the GridView with images
                 imageAdapterGridView = new ImageAdapterGridView(this, 380, 380);
                 imageAdapterGridView.setImagePaths(imagePaths);
                 binding.journalImageGrid.setAdapter(imageAdapterGridView);
-                binding.txtNoImages.setVisibility(View.GONE);
+                switchToGalleryView();
             }
         } catch (Exception e) {
             Log.e("JournalGalleryActivity", "Error loading images", e);
             NotificationUtility.showNotification(getApplicationContext(), "Unable to show images");
         }
+    }
+
+    private void switchToGalleryView() {
+        binding.journalImageGrid.setVisibility(View.VISIBLE);
+        binding.txtNoImages.setVisibility(View.GONE);
+    }
+
+    private void switchToEmptyView() {
+        binding.journalImageGrid.setVisibility(View.GONE);
+        binding.txtNoImages.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -106,6 +113,7 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
      */
     private void registerEventListeners() {
         this.binding.journalImageGrid.setOnItemClickListener(this);
+        this.binding.btnGoToHome.setOnClickListener(this);
     }
 
     @Override
@@ -116,5 +124,12 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
         startActivity(intent);
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == this.binding.btnGoToHome.getId()) {
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+        }
+    }
 }
 

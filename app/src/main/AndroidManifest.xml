@@ -29,7 +29,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.JournalActivity" />
         <activity android:name=".activities.MapActivity" />
         <activity android:name=".activities.JournalGalleryActivity" />
         <activity android:name=".activities.FullScreenImageActivity" />

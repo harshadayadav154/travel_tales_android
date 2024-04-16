@@ -7,9 +7,6 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.travel_tales.R;
-import com.example.travel_tales.activities.JournalActivity;
-import com.example.travel_tales.activities.JournalGalleryActivity;
-import com.example.travel_tales.activities.MapActivity;
 import com.example.travel_tales.databinding.ActivityMainBinding;
 import com.example.travel_tales.utility.SliderAdapter;
 
