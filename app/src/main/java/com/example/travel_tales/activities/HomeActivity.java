@@ -47,7 +47,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(homeBinding.materialToolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         SetNavigationDrawer();
-        setBottomNavigation();
+
     }
 
     // Initializing navigation drawer items to the fragments

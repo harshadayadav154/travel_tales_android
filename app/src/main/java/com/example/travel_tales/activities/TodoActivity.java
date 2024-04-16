@@ -5,7 +5,9 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TodoActivity extends AppCompatActivity implements OnDialogCloseListener {
+public class TodoActivity extends AppCompatActivity implements OnDialogCloseListener, View.OnClickListener {
 
     ActivityTodoBinding todoBinding;
 
@@ -60,6 +62,15 @@ public class TodoActivity extends AppCompatActivity implements OnDialogCloseList
         Collections.reverse(mList);
         todoAdaper.setTodoItem(mList);
 
+        registerEventListeners();
+
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new RecyclerViewTouchHelper(todoAdaper));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
+    private void registerEventListeners() {
+
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,9 +79,7 @@ public class TodoActivity extends AppCompatActivity implements OnDialogCloseList
                 }
             }
         });
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new RecyclerViewTouchHelper(todoAdaper));
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        todoBinding.btnGoToHome.setOnClickListener(this);
     }
 
     @Override
@@ -79,5 +88,11 @@ public class TodoActivity extends AppCompatActivity implements OnDialogCloseList
         Collections.reverse(mList);
         todoAdaper.setTodoItem(mList);
         todoAdaper.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
     }
 }
