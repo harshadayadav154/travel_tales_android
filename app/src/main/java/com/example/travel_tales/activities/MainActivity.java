@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.travel_tales.R;
 import com.example.travel_tales.databinding.ActivityMainBinding;
-import com.example.travel_tales.utility.SliderAdapter;
+import com.example.travel_tales.adapters.SliderAdapter;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {

@@ -1,4 +1,4 @@
-package com.example.travel_tales.utility;
+package com.example.travel_tales.adapters;
 
 import android.view.View;
 
