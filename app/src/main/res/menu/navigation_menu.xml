@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nav1">
+    <item
+        android:id="@+id/nav_add_journal"
+        android:icon="@drawable/menu_icon"
+        android:title="@string/add_journal"
+        />
+    <item
+        android:id="@+id/nav_delete_journal"
+        android:icon="@drawable/menu_icon"
+        android:title="@string/delete_journal"/>
+    <item
+        android:id="@+id/nav_list_journal"
+        android:icon="@drawable/menu_icon"
+        android:title="@string/list_journal"/>
+
+    <item
+        android:id="@+id/nav_update_journal"
+        android:icon="@drawable/menu_icon"
+        android:title="@string/update_journal"/>
+</menu>
+

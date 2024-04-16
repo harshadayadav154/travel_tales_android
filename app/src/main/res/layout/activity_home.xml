@@ -144,7 +144,13 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
         <!--this is the navigation view which draws
             and shows the navigation drawer-->
-
+        <com.google.android.material.navigation.NavigationView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:id="@+id/nav_view"
+            app:menu="@menu/navigation_menu"
+            app:headerLayout="@layout/header"/>
     </androidx.drawerlayout.widget.DrawerLayout>
 </LinearLayout>
 

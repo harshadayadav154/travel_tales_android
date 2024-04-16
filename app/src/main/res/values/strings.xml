@@ -20,4 +20,13 @@
     <string name="slide_1_title">Add Journal</string>
     <string name="slide_2_title">Add your landmarks</string>
     <string name="slide_3_title">Capture Your Moment</string>
+    <string name="back">Back\n</string>
+    <string name="profile">Profile</string>
+    <string name="delete_journal">Delete journal</string>
+    <string name="list_journal">List Journal</string>
+    <string name="update_journal">Update Journal</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
 </resources>

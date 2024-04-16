@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/nav_bottom_search"
-        android:title="@string/search"
-        android:icon="@drawable/search" />
+        android:id="@+id/nav_bottom_back"
+        android:title="@string/back"
+       android:icon="@drawable/back"/>
 
     <item
         android:id="@+id/nav_bottom_home"
         android:title="@string/home"
         android:icon="@drawable/home" />
+
+    <item
+        android:id="@+id/nav_bottom_profile"
+        android:title="@string/profile"
+        android:icon="@drawable/profile" />
 </menu>
