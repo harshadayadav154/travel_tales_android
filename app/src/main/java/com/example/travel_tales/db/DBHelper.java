@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.travel_tales.models.JournalEntry;
 import com.example.travel_tales.models.Location;
@@ -80,6 +81,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + COL_TODO_TITLE + " TEXT,"
             + COL_STATUS + " REAL" + ")";
 
+
+    private static final String TAG = "DBHelper";
 
     /**
      * Constructor
@@ -196,6 +199,79 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return journalEntry;
     }
+
+    /**
+     * Retrieves all journal entries associated with the given user ID from the database.
+     *
+     * @param userId The ID of the user whose journal entries are to be retrieved.
+     * @return A list of journal entries belonging to the specified user. Returns an empty list if an exception occurs during database access.
+     */
+    @SuppressLint("Range")
+    public List<JournalEntry> getAllJournalsByUserId(int userId) {
+        // Getting readable database
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Defining the select query
+        String selectQuery = "SELECT  * FROM " + TABLE_JOURNAL_ENTRIES + " WHERE "
+                + KEY_USER_ID + " = " + userId;
+
+        // Executing the query
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        JournalEntry journalEntry = null;
+        List<JournalEntry> journalEntries = new ArrayList<>();
+
+        try {
+            // Checking if the cursor is not null and moving to the first entry
+            if (c != null && c.moveToFirst()) {
+                do {
+                    // Initializing a new JournalEntry object
+                    journalEntry = new JournalEntry();
+                    // Setting attributes of the JournalEntry object from the cursor data
+                    journalEntry.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+                    journalEntry.setCreatedAt(DateUtility.parseStringToDate(c.getString(c.getColumnIndex(COL_CREATED_AT))));
+                    journalEntry.setUpdatedAt(DateUtility.parseStringToDate(c.getString(c.getColumnIndex(COL_UPDATED_AT))));
+                    journalEntry.setUserId(c.getInt(c.getColumnIndex(KEY_USER_ID)));
+                    journalEntry.setTitle(c.getString(c.getColumnIndex(COL_TITLE)));
+                    journalEntry.setDescription(c.getString(c.getColumnIndex(COL_DESCRIPTION)));
+                    journalEntry.setDate(DateUtility.parseStringToDate(c.getString(c.getColumnIndex(COL_DATE))));
+
+                    // Creating a new Location object and setting its attributes
+                    Location location = new Location();
+                    location.setName(c.getString(c.getColumnIndex(COL_LOCATION_NAME)));
+                    location.setLongitude(c.getDouble(c.getColumnIndex(COL_LONGITUDE)));
+                    location.setLatitude(c.getDouble(c.getColumnIndex(COL_LATITUDE)));
+
+                    // Setting the Location object in the JournalEntry
+                    journalEntry.setLocation(location);
+
+                    // Retrieving the image paths from the cursor
+                    String imagePathString = c.getString(c.getColumnIndex(COL_IMAGE_PATHS));
+                    // Parsing the image paths string into a list of strings
+                    List<String> imagePaths = Arrays.asList(imagePathString.split("\\s*,\\s*"));
+                    // Setting the image paths in the JournalEntry object
+                    journalEntry.setImagePaths(imagePaths);
+
+                    // Adding the JournalEntry object to the list
+                    journalEntries.add(journalEntry);
+                } while (c.moveToNext()); // Moving to the next entry if available
+            }
+        } catch (Exception e) {
+            // Log any exceptions that occur
+            Log.e(TAG, "Error retrieving journal entries: " + e.getMessage());
+            // Return an empty list in case of exception
+            return new ArrayList<>();
+        } finally {
+            // Closing the cursor
+            if (c != null) {
+                c.close();
+            }
+        }
+
+        // Returning the list of JournalEntry objects
+        return journalEntries;
+    }
+
 
     /**
      * Updates a journal entry in the database.
