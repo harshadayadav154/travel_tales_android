@@ -330,7 +330,6 @@ public class UpdateJournalFragment extends Fragment implements View.OnClickListe
     private void processFormSubmission() throws ParseException {
         searchLocation(); // Searching for location coordinates
 
-        JournalEntry journalEntry = new JournalEntry();
         journalEntry.setUserId(userId); //todo - fix this later
         journalEntry.setTitle(Objects.requireNonNull(binding.editTextTitle.getText()).toString().trim());
         journalEntry.setDescription(Objects.requireNonNull(binding.editTextDescription.getText()).toString().trim());

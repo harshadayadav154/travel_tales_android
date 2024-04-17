@@ -66,7 +66,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_USER_EMAIL = "email";
     public static final String COLUMN_USER_PASSWORD = "password";
 
-    // TODO table - column names
     private static final String COL_ID = "id";
     private static final String COL_TODO_TITLE = "Title";
     private static final String COL_STATUS = "Status";
@@ -85,6 +84,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + COL_LATITUDE + " REAL,"
             + COL_LONGITUDE + " REAL,"
             + COL_IMAGE_PATHS + " TEXT" + ")";
+
     private static final String CREATE_TABLE_TODO = "CREATE TABLE " + TABLE_TODO + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + KEY_USER_ID + " INTEGER,"
@@ -532,25 +532,23 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     /**
-     * Inserts or updates user details.
+     * Updates user details in the database using the user's ID.
      *
-     * @param email     The email of the user.
-     * @param firstName The first name of the user.
-     * @param lastName  The last name of the user.
-     * @return true if the insertion or update was successful, false otherwise.
+     * @param user User object containing all the details to update.
+     * @return true if the update was successful, false otherwise.
      */
-    public boolean insertOrUpdateUserDetails(String email, String firstName, String lastName,String password) {
+    public boolean updateUserDetails(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_USER_EMAIL, email);
-        contentValues.put(COLUMN_USER_FIRST_NAME, firstName);
-        contentValues.put(COLUMN_USER_LAST_NAME, lastName);
-        contentValues.put(COLUMN_USER_PASSWORD, password);
+        contentValues.put(COLUMN_USER_EMAIL, user.getEmail());
+        contentValues.put(COLUMN_USER_FIRST_NAME, user.getFirstName());
+        contentValues.put(COLUMN_USER_LAST_NAME, user.getLastName());
+        contentValues.put(COLUMN_USER_PASSWORD, user.getPassword());
 
+        // Update the user details where the user ID matches
+        int rowsAffected = db.update(TABLE_USERS, contentValues, KEY_ID + " = ?", new String[]{String.valueOf(user.getId())});
 
-        long result = db.replace(TABLE_USERS, null, contentValues);
-
-        return result != -1;
+        return rowsAffected > 0; // Return true if at least one row was updated
     }
 
     /**
@@ -607,7 +605,7 @@ public class DBHelper extends SQLiteOpenHelper {
      * @param toDO - todo of the user
      */
 
-    public void insertTodo(Todo toDO){
+    public void insertTodo(Todo toDO) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COL_TODO_TITLE, toDO.getTodoTitle());
@@ -619,11 +617,11 @@ public class DBHelper extends SQLiteOpenHelper {
     /**
      * Updates a Todo in the database.
      *
-     * @param id- unique id
+     * @param id-   unique id
      * @param todo- todo name to update
      */
 
-    public void updateTodo(int id, String todo){
+    public void updateTodo(int id, String todo) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COL_TODO_TITLE, todo);
@@ -633,11 +631,11 @@ public class DBHelper extends SQLiteOpenHelper {
     /**
      * Updates a Todo in the database.
      *
-     * @param id- unique id
+     * @param id-     unique id
      * @param status- todo status to update
      */
 
-    public void updateStatus(int id, int status){
+    public void updateStatus(int id, int status) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COL_STATUS, status);
@@ -649,7 +647,7 @@ public class DBHelper extends SQLiteOpenHelper {
      *
      * @param id- unique id
      */
-    public void deleteTodo(int id){
+    public void deleteTodo(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_TODO, "ID=?", new String[]{String.valueOf(id)});
     }
@@ -661,26 +659,26 @@ public class DBHelper extends SQLiteOpenHelper {
      * @return A list of all todos.
      */
     @SuppressLint("Range")
-    public List<Todo> getAllTodos(int userId){
+    public List<Todo> getAllTodos(int userId) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = null;
         List<Todo> todoList = new ArrayList<>();
 
         db.beginTransaction();
-        try{
+        try {
             // Define your query
             String query = "SELECT * FROM " + TABLE_TODO + " WHERE " +
                     KEY_USER_ID + " = ?";
-            cursor =  db.rawQuery(query, new String[]{String.valueOf(userId)});
-            if(cursor != null && cursor.moveToFirst()){
-                do{
+            cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
                     Todo todo = new Todo();
                     todo.setId(cursor.getInt(cursor.getColumnIndex(COL_ID)));
                     todo.setUser_id(cursor.getInt(cursor.getColumnIndex(KEY_USER_ID)));
                     todo.setTodoTitle(cursor.getString(cursor.getColumnIndex(COL_TODO_TITLE)));
                     todo.setStatus(cursor.getInt(cursor.getColumnIndex(COL_STATUS)));
                     todoList.add(todo);
-                }while ((cursor.moveToNext()));
+                } while ((cursor.moveToNext()));
             }
         } finally {
             db.endTransaction();

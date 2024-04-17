@@ -66,4 +66,9 @@
     <string name="upload_profile_picture_btn_user">Upload Profile Picture</string>
     <string name="password_signin">Password</string>
     <string name="logout">Log Out</string>
+    <string name="update_details">Update Details</string>
+    <string name="change_picture">Change Picture</string>
+    <string name="enter_last_name">Enter Last Name</string>
+    <string name="enter_email">Enter email</string>
+    <string name="enter_first_name">Enter First Name</string>
 </resources>

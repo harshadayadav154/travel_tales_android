@@ -46,12 +46,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setSupportActionBar(homeBinding.materialToolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        SetNavigationDrawer();
+        setNavigationDrawer();
+        setBottomNavigation();
 
     }
 
     // Initializing navigation drawer items to the fragments
-    private void SetNavigationDrawer() {
+    private void setNavigationDrawer() {
         homeBinding.navView.setNavigationItemSelectedListener(item -> {
             Fragment frag = null;
             int itemId = item.getItemId();
@@ -91,7 +92,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else if (v.getId() == homeBinding.capturedImages.getId()) {
             Intent intent = new Intent(this, JournalGalleryActivity.class);
             startActivity(intent);
-        }else if (v.getId() == R.id.nav_bottom_profile) {
+        } else if (v.getId() == R.id.nav_bottom_profile) {
             Intent intentProfile = new Intent(this, UserDetailsActivity.class);
             startActivity(intentProfile);
         }
@@ -112,17 +113,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private void setBottomNavigation() {
         // Set listener for bottom navigation
         homeBinding.bottomNavView.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nav_search) {
-
-            } else if (item.getItemId() == R.id.nav_bottom_home) {
+            if (item.getItemId() == R.id.nav_bottom_home) {
                 Intent intent = new Intent(this, HomeActivity.class);
                 startActivity(intent);
-            } /*else if (item.getItemId() == R.id.profile) {
-                // Replacing the content frame layout with the ProfileFragment
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.frame, new ProfileFragment())
-                        .commit();
-            }*/
+            } else if (item.getItemId() == R.id.nav_bottom_profile) {
+                Intent intent = new Intent(this, UserDetailsActivity.class);
+                startActivity(intent);
+            }
             // Returning true to indicate the item is selected
             return true;
         });
