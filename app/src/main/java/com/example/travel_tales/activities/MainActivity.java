@@ -66,17 +66,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 binding.btnNext.setText(R.string.cont);
             }
             else{
-                launchHomeScreen();
+                launchSignInScreen();
             }
         } else if (v.getId() == binding.btnSkip.getId()) {
-            launchHomeScreen();
+            launchSignInScreen();
         }
     }
 
-    private void launchHomeScreen() {
-        intent = new Intent(this, HomeActivity.class);
+    private void launchSignInScreen() {
+        intent = new Intent(this, SignInActivity.class);
         startActivity(intent);
-
     }
 
     // Get the item index in ViewPager

@@ -34,4 +34,29 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="update">Update</string>
+
+
+
+
+    <!--  User Related values   -->
+    <string name="sign_in_signin">Sign In</string>
+    <string name="email_sign_up">Email</string>
+    <string name="password_sign_up">Password</string>
+    <string name="confirm_password_sign_up">Confirm Password</string>
+    <string name="sign_in_sign_up">Sign In</string>
+    <string name="already_a_user_sign_up">Already a user?</string>
+    <string name="back_to_sign_in">Back to Sign In</string>
+    <string name="sign_in_sign_in">Sign In</string>
+    <string name="email_signin">Email</string>
+    <string name="sign_in_btn">Sign In</string>
+    <string name="not_a_member_signin">Not a Member?</string>
+    <string name="sign_up_btn_signin">Sign Up</string>
+    <string name="profile_user">Profile</string>
+    <string name="user_profile_user">User Profile</string>
+    <string name="email__user">Email</string>
+    <string name="example_email_com_user">example@email.com</string>
+    <string name="want_to_change_password_user">Want to Change Password?</string>
+    <string name="enter_new_password_user">Enter New Password</string>
+    <string name="upload_profile_picture_btn_user">Upload Profile Picture</string>
+    <string name="password_signin">Password</string>
 </resources>

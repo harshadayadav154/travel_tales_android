@@ -91,6 +91,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else if (v.getId() == homeBinding.capturedImages.getId()) {
             Intent intent = new Intent(this, JournalGalleryActivity.class);
             startActivity(intent);
+        }else if (v.getId() == R.id.nav_bottom_profile) {
+            Intent intentProfile = new Intent(this, UserDetailsActivity.class);
+            startActivity(intentProfile);
         }
     }
 

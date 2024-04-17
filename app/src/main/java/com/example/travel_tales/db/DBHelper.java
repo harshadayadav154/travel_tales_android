@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.example.travel_tales.models.JournalEntry;
 import com.example.travel_tales.models.Location;
+import com.example.travel_tales.models.User;
 import com.example.travel_tales.utility.DateUtility;
 
 import java.text.ParseException;
@@ -36,6 +37,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Table Names
     private static final String TABLE_JOURNAL_ENTRIES = "JournalEntries";
+    private static final String TABLE_USERS = "Users";
 
     // Common column names
     private static final String KEY_ID = "id";
@@ -55,6 +57,12 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COL_LONGITUDE = "longitude";
     private static final String COL_IMAGE_PATHS = "image_paths";
 
+    // USER_ENTRIES Table - column names
+    public static final String COLUMN_USER_FIRST_NAME = "first_name";
+    public static final String COLUMN_USER_LAST_NAME = "last_name";
+    public static final String COLUMN_USER_EMAIL = "email";
+    public static final String COLUMN_USER_PASSWORD = "password";
+
     // Table Create Statements
     // Journal Entries table create statement
     private static final String CREATE_TABLE_JOURNAL_ENTRIES = "CREATE TABLE " + TABLE_JOURNAL_ENTRIES + "("
@@ -69,6 +77,13 @@ public class DBHelper extends SQLiteOpenHelper {
             + COL_LATITUDE + " REAL,"
             + COL_LONGITUDE + " REAL,"
             + COL_IMAGE_PATHS + " TEXT" + ")";
+
+    private static final String CREATE_TABLE_USERS = "CREATE TABLE " + TABLE_USERS + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COLUMN_USER_EMAIL + " TEXT,"
+            + COLUMN_USER_PASSWORD + " TEXT,"
+            + COLUMN_USER_FIRST_NAME + " TEXT,"
+            + COLUMN_USER_LAST_NAME + " TEXT" + ")";
 
     private static final String TAG = "DBHelper";
 
@@ -85,12 +100,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // creating required tables
         db.execSQL(CREATE_TABLE_JOURNAL_ENTRIES);
+        db.execSQL(CREATE_TABLE_USERS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_JOURNAL_ENTRIES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         // create new tables
         onCreate(db);
     }
@@ -424,5 +441,144 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         db.close();
         return distinctLocations;
+    }
+
+
+    //--------------------USER-------------------------
+
+    /**
+     * Adds a new user to the database.
+     *
+     * @param user The user to add.
+     * @return true if the insertion was successful, false otherwise.
+     */
+    public boolean addUser(User user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USER_EMAIL, user.getEmail());
+        values.put(COLUMN_USER_PASSWORD, user.getPassword());
+        values.put(COLUMN_USER_FIRST_NAME, user.getFirstName());
+        values.put(COLUMN_USER_LAST_NAME, user.getLastName());
+        // Inserting row
+        long result = db.insert(TABLE_USERS, null, values);
+        db.close();
+        return result != -1;
+    }
+
+    /**
+     * Checks if a user exists with the given email and password.
+     *
+     * @param email    The email of the user.
+     * @param password The password of the user.
+     * @return true if a matching user is found, false otherwise.
+     */
+    public boolean checkUser(String email, String password) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] columns = {
+                KEY_ID // You can select only the user id since you just need to check existence
+        };
+        String selection = COLUMN_USER_EMAIL + " = ? AND " + COLUMN_USER_PASSWORD + " = ?";
+        String[] selectionArgs = {email, password};
+
+        Cursor cursor = db.query(TABLE_USERS, columns, selection, selectionArgs, null, null, null);
+        int cursorCount = cursor.getCount();
+        cursor.close();
+        db.close();
+
+        return cursorCount > 0;
+    }
+
+    /**
+     * Retrieves user details by email.
+     *
+     * @param email The email of the user.
+     * @return A Cursor containing the user details.
+     */
+    @SuppressLint("Range")
+    public User getUserByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        User user = null;
+        String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_EMAIL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email});
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new User();
+            user.setEmail(cursor.getString(cursor.getColumnIndex(COLUMN_USER_EMAIL)));
+            user.setPassword(cursor.getString(cursor.getColumnIndex(COLUMN_USER_PASSWORD)));
+            user.setFirstName(cursor.getString(cursor.getColumnIndex(COLUMN_USER_FIRST_NAME)));
+            user.setLastName(cursor.getString(cursor.getColumnIndex(COLUMN_USER_LAST_NAME)));
+            cursor.close();
+        }
+        db.close();
+        return user;
+    }
+
+
+    /**
+     * Inserts or updates user details.
+     *
+     * @param email     The email of the user.
+     * @param firstName The first name of the user.
+     * @param lastName  The last name of the user.
+     * @return true if the insertion or update was successful, false otherwise.
+     */
+    public boolean insertOrUpdateUserDetails(String email, String firstName, String lastName,String password) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_USER_EMAIL, email);
+        contentValues.put(COLUMN_USER_FIRST_NAME, firstName);
+        contentValues.put(COLUMN_USER_LAST_NAME, lastName);
+        contentValues.put(COLUMN_USER_PASSWORD, password);
+
+
+        long result = db.replace(TABLE_USERS, null, contentValues);
+
+        return result != -1;
+    }
+
+    /**
+     * Updates the password of a user.
+     *
+     * @param email       The email of the user.
+     * @param newPassword The new password to set.
+     * @return true if the update was successful, false otherwise.
+     */
+    public boolean updateUserPassword(String email, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USER_PASSWORD, newPassword);
+
+        // Updating row
+        int rowsAffected = db.update(TABLE_USERS, values, COLUMN_USER_EMAIL + " = ?",
+                new String[]{email});
+        db.close();
+
+        return rowsAffected > 0;
+    }
+
+    @SuppressLint("Range")
+    public int getUserId(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        int userId = -1; // Default value if user is not found
+
+        // Define columns to retrieve
+        String[] columns = {KEY_ID};
+
+        // Define selection criteria
+        String selection = COLUMN_USER_EMAIL + " = ?";
+        String[] selectionArgs = {email};
+
+        // Query the database
+        Cursor cursor = db.query(TABLE_USERS, columns, selection, selectionArgs, null, null, null);
+
+        // Check if user exists and retrieve user ID
+        if (cursor != null && cursor.moveToFirst()) {
+            userId = cursor.getInt(cursor.getColumnIndex(KEY_ID));
+            cursor.close(); // Close the cursor to free up resources
+        }
+
+        db.close(); // Close the database connection
+
+        return userId;
     }
 }
