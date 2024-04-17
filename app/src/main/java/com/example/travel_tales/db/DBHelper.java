@@ -520,6 +520,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, new String[]{email});
         if (cursor != null && cursor.moveToFirst()) {
             user = new User();
+            user.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
             user.setEmail(cursor.getString(cursor.getColumnIndex(COLUMN_USER_EMAIL)));
             user.setPassword(cursor.getString(cursor.getColumnIndex(COLUMN_USER_PASSWORD)));
             user.setFirstName(cursor.getString(cursor.getColumnIndex(COLUMN_USER_FIRST_NAME)));

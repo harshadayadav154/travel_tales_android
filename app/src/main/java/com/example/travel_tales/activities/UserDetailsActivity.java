@@ -20,6 +20,7 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
     private DBHelper dbHelper;
     private Uri imageUri;
     private User user;
+    private String sharedPrefEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +28,38 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
         binding = ActivityUserDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        sharedPrefEmail = SharedPreferencesUtil.getEmailId(getApplicationContext());
         init();
         validateData();
         registerEventListeners();
-        initDataBinding();
+    }
+
+    private void validateData() {
+        String userEmail = SharedPreferencesUtil.getEmailId(getApplicationContext());
+        if (!userEmail.isEmpty()) {
+            fetchUserDetails(sharedPrefEmail);
+        } else {
+            Toast.makeText(this, "User details not found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void init() {
+        dbHelper = new DBHelper(this);
+    }
+
+    private void registerEventListeners() {
+        binding.btnSaveDetails.setOnClickListener(this);
+        binding.btnUploadImage.setOnClickListener(this);
+        binding.btnGoToHome.setOnClickListener(this);
+    }
+
+    private void fetchUserDetails(String email) {
+        user = dbHelper.getUserByEmail(email);
+        if (user == null) {
+            Toast.makeText(this, "User details not found", Toast.LENGTH_SHORT).show();
+        } else {
+            initDataBinding();  // Bind data only if user is found
+        }
     }
 
     private void initDataBinding() {
@@ -41,59 +70,31 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private void validateData() {
-        String userEmail = SharedPreferencesUtil.getEmailId(getApplicationContext());
-        // Check if user email is available
-        if (!userEmail.isEmpty()) {
-            // Fetch user details
-            fetchUserDetails(userEmail);
-        } else {
-            Toast.makeText(this, "User details not found", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void init() {
-        dbHelper = new DBHelper(this);
-    }
-
-    // Method to register event listeners for buttons
-    private void registerEventListeners() {
-        binding.btnSaveDetails.setOnClickListener(this);
-        binding.btnUploadImage.setOnClickListener(this);
-        binding.btnGoToHome.setOnClickListener(this);
-    }
-
-    // Method to fetch and display user details
-    private void fetchUserDetails(String email) {
-        user = dbHelper.getUserByEmail(email);
-        if (user != null) {
-            Toast.makeText(this, "User details not found", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    // Method to update user details
     private void updateUserDetails() {
-        // Update user details in the database
-        boolean isUpdated = dbHelper.updateUserDetails(user);
+        // Update the user object with new details from EditText fields
+        if (user != null) {
+            user.setPassword(binding.etNewPassword.getText().toString());
+            user.setFirstName(binding.etFirstName.getText().toString());
+            user.setLastName(binding.etLastName.getText().toString());
 
-        // Show appropriate message
-        if (isUpdated) {
-            Toast.makeText(UserDetailsActivity.this, "Your details updated", Toast.LENGTH_SHORT).show();
+            boolean isUpdated = dbHelper.updateUserDetails(user);
+            if (isUpdated) {
+                Toast.makeText(UserDetailsActivity.this, "Your details updated", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(UserDetailsActivity.this, "No changes made", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            Toast.makeText(UserDetailsActivity.this, "No changes made", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "User is not loaded!", Toast.LENGTH_SHORT).show();
         }
     }
 
-    // Method to open the gallery and select an image
     private void openGallery() {
-        ActivityResultLauncher<String> galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
-                result -> {
-                    if (result != null) {
-                        imageUri = result;
-                        binding.imgProfile.setImageURI(imageUri);
-                    }
-                });
-
+        ActivityResultLauncher<String> galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
+            if (result != null) {
+                imageUri = result;
+                binding.imgProfile.setImageURI(imageUri);
+            }
+        });
         galleryLauncher.launch("image/*");
     }
 

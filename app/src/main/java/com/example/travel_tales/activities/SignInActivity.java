@@ -9,6 +9,7 @@ import android.view.View;
 import com.example.travel_tales.databinding.ActivitySignInBinding;
 import com.example.travel_tales.db.DBHelper;
 import com.example.travel_tales.utility.NotificationUtility;
+import com.example.travel_tales.utility.SharedPreferencesUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Objects;
@@ -100,6 +101,7 @@ public class SignInActivity extends Activity implements View.OnClickListener {
      * @param userId The user's ID.
      */
     private void saveUserData(String email, int userId) {
+        SharedPreferencesUtil.clearSession(getApplicationContext());
         SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("EMAIL", email);

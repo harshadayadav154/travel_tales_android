@@ -1,6 +1,7 @@
 package com.example.travel_tales.utility;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 /**
  * Utility class for managing SharedPreferences related operations.
@@ -56,7 +57,7 @@ public class SharedPreferencesUtil {
             // Get SharedPreferences instance and retrieve user ID
             return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                     .getInt(USER_ID, -1);
-        }catch (Exception e){
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -72,6 +73,26 @@ public class SharedPreferencesUtil {
         // Get SharedPreferences instance and retrieve email ID
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 .getString(EMAIL, "");
+    }
+
+    /**
+     * Clears all data stored in SharedPreferences.
+     * This method is typically used to clear user session data when logging out.
+     *
+     * @param context The context used to access SharedPreferences.
+     */
+    public static void clearSession(Context context) {
+        // Get the SharedPreferences instance using the predefined PREF_NAME constant
+        SharedPreferences shp = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+
+        // Obtain an editor to make changes to the SharedPreferences
+        SharedPreferences.Editor editor = shp.edit();
+
+        // Remove all values from the SharedPreferences
+        editor.clear();
+
+        // Commit the changes asynchronously
+        editor.apply();
     }
 }
 

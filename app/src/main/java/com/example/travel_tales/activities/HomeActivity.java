@@ -17,6 +17,7 @@ import com.example.travel_tales.fragments.AddJournalFragment;
 import com.example.travel_tales.fragments.DeleteJournalFragment;
 import com.example.travel_tales.fragments.ListJournalFragment;
 import com.example.travel_tales.fragments.UpdateViewFragment;
+import com.example.travel_tales.utility.SharedPreferencesUtil;
 
 import java.util.Objects;
 
@@ -92,8 +93,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else if (v.getId() == homeBinding.capturedImages.getId()) {
             Intent intent = new Intent(this, JournalGalleryActivity.class);
             startActivity(intent);
-        } else if (v.getId() == R.id.nav_bottom_profile) {
-            Intent intentProfile = new Intent(this, UserDetailsActivity.class);
+        } else if (v.getId() == homeBinding.logOutButton.getId()) {
+            SharedPreferencesUtil.clearSession(getApplicationContext());
+            Intent intentProfile = new Intent(this, SignInActivity.class);
             startActivity(intentProfile);
         }
     }
