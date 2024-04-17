@@ -30,6 +30,12 @@
     <string name="open">open</string>
     <string name="close">close</string>
     <string name="go_to_home">Go To Home</string>
+    <string name="add_todo">ToDo Places</string>
+    <string name="addNewTodo">Add New Todo</string>
+    <string name="save">Save</string>
+    <string name="slide_1_desc">"Embark on a digital odyssey with our travel journal feature. Document your adventures, from the bustling streets of cities to the tranquil shores of distant shores. "</string>
+    <string name="slide_2_desc">Transform your travels into timeless tales within our digital journal, where each landmark becomes a chapter in your adventure-filled story</string>
+    <string name="slide_3_desc">Capture the essence of each destination with vivid descriptions, cherished memories, and hidden gems discovered along the way. Whether you\'re a seasoned explorer or a curious wanderer, let your journeys come to life in this virtual voyage through the world.</string>
     <string name="list_of_journals">List of Journals</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
@@ -59,4 +65,5 @@
     <string name="enter_new_password_user">Enter New Password</string>
     <string name="upload_profile_picture_btn_user">Upload Profile Picture</string>
     <string name="password_signin">Password</string>
+    <string name="logout">Log Out</string>
 </resources>

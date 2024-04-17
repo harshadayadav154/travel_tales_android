@@ -1,30 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+
+    <ImageView
+        android:id="@+id/sliderImg3"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/slider_image3" />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:scaleType="fitStart"
+        android:src="@drawable/arc_down"/>
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:text="@string/slide_3_title"
+        android:textSize="30sp"
+        android:layout_below="@id/sliderImg1"
+        android:textColor="@color/white"
+        android:layout_gravity="center"
+        android:textStyle="bold" />
 
-        <ImageView
-            android:layout_width="@dimen/img_width"
-            android:layout_height="@dimen/img_height"
-            android:src="@drawable/slider_image3" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/slide_3_desc"
+        android:textSize="18sp"
+        android:layout_below="@id/sliderImg2"
+        android:textColor="@color/white_secondary"
+        android:textAlignment="center"
+        android:padding="15dp"
+        />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/slide_3_title"
-            android:textSize="@dimen/slide_title"
-            android:textStyle="bold" />
-
-
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>
 
 
 

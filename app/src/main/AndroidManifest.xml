@@ -19,6 +19,9 @@
         android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.Travel_tales">
         <activity
+            android:name=".activities.TodoActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.HomeActivity"
             android:exported="false" />
         <activity
