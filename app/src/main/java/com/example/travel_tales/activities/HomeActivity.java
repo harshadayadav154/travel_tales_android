@@ -39,6 +39,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         homeBinding.todoButton.setOnClickListener(this);
         homeBinding.mapButton.setOnClickListener(this);
         homeBinding.capturedImages.setOnClickListener(this);
+        homeBinding.devinfoButton.setOnClickListener(this);
+        homeBinding.logOutButton.setOnClickListener(this);
 
         // creating navigation drawer
         mToggle = new ActionBarDrawerToggle(this, homeBinding.drawerLayout, homeBinding.materialToolbar, R.string.open, R.string.close);
@@ -96,6 +98,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else if (v.getId() == homeBinding.logOutButton.getId()) {
             SharedPreferencesUtil.clearSession(getApplicationContext());
             Intent intentProfile = new Intent(this, SignInActivity.class);
+            startActivity(intentProfile);
+        } else if (v.getId() == homeBinding.devinfoButton.getId()) {
+            Intent intentProfile = new Intent(this, DeveloperActivity.class);
             startActivity(intentProfile);
         }
     }

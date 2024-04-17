@@ -71,4 +71,12 @@
     <string name="enter_last_name">Enter Last Name</string>
     <string name="enter_email">Enter email</string>
     <string name="enter_first_name">Enter First Name</string>
+    <string name="nabin_ghatani">Nabin Ghatani</string>
+    <string name="student_id_8921960">Student ID: 8921960</string>
+    <string name="harshada_yadav">Harshada Yadav</string>
+    <string name="student_id_8928701">Student ID: 8928701</string>
+    <string name="developers">Developers</string>
+    <string name="yash_patel">Yash Kumar Patel</string>
+    <string name="student_id_34567">Student ID: 8932978</string>
+    <string name="info">Info</string>
 </resources>
