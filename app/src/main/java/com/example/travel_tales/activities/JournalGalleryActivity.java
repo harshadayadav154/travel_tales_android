@@ -19,6 +19,7 @@ import com.example.travel_tales.adapters.GalleryAdapter;
 import com.example.travel_tales.databinding.ActivityJournalGalleryBinding;
 import com.example.travel_tales.db.DBHelper;
 import com.example.travel_tales.utility.NotificationUtility;
+import com.example.travel_tales.utility.SharedPreferencesUtil;
 
 import java.io.Serializable;
 import java.util.List;
@@ -33,6 +34,7 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
 
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 100;
     private GalleryAdapter galleryAdapter;
+    private int userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +43,14 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
         binding = ActivityJournalGalleryBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        userId = SharedPreferencesUtil.getUserId(getApplicationContext());
+
         // Initializing components
         initializeComponents();
 
         // Registering event listeners
         registerEventListeners();
+
     }
 
     /**
@@ -68,7 +73,7 @@ public class JournalGalleryActivity extends AppCompatActivity implements Adapter
         try {
             dbHelper = new DBHelper(getApplicationContext());
             // Fetching image URIs from the database
-            List<String> imagePaths = dbHelper.getImagePathsByUserId(1); //todo this later for user id
+            List<String> imagePaths = dbHelper.getImagePathsByUserId(userId); //todo this later for user id
             if (imagePaths.isEmpty()) {
                 switchToEmptyView();
             } else {

@@ -13,6 +13,7 @@ import com.example.travel_tales.activities.HomeActivity;
 import com.example.travel_tales.adapters.JournalListAdapter;
 import com.example.travel_tales.databinding.FragmentListJournalBinding;
 import com.example.travel_tales.db.DBHelper;
+import com.example.travel_tales.utility.SharedPreferencesUtil;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +29,7 @@ public class ListJournalFragment extends Fragment implements View.OnClickListene
 
     private String mParam1;
     private String mParam2;
+    private int userId;
 
     public ListJournalFragment() {
     }
@@ -64,8 +66,11 @@ public class ListJournalFragment extends Fragment implements View.OnClickListene
         binding = FragmentListJournalBinding.inflate(inflater, container, false);
         View rootView = binding.getRoot();
 
+        userId = SharedPreferencesUtil.getUserId(getContext());
+
         init(); // Initializing
         setupRecyclerView(); // Setting up RecyclerView
+
 
         return rootView;
     }
@@ -76,9 +81,6 @@ public class ListJournalFragment extends Fragment implements View.OnClickListene
     private void init() {
         // Initializing the database helper
         dbHelper = new DBHelper(requireContext());
-
-        // Setting up click listener for the cancel button
-        //binding.btnGoToHome.setOnClickListener(this);
     }
 
     /**
@@ -86,16 +88,12 @@ public class ListJournalFragment extends Fragment implements View.OnClickListene
      */
     private void setupRecyclerView() {
         JournalListAdapter adapter = new JournalListAdapter();
-        adapter.setJournalEntryList(dbHelper.getAllJournalsByUserId(1));//todo fix this later
+        adapter.setJournalEntryList(dbHelper.getAllJournalsByUserId(userId));//todo fix this later
         binding.rcView.setAdapter(adapter);
         binding.rcView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     @Override
     public void onClick(View v) {
-        /*if (v.getId() == this.binding.btnGoToHome.getId()) {
-            Intent intent = new Intent(getContext(), HomeActivity.class);
-            startActivity(intent);
-        }*/
     }
 }

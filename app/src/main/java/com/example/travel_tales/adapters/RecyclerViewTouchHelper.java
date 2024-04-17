@@ -11,9 +11,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.travel_tales.R;
-import com.example.travel_tales.activities.TodoActivity;
-
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class RecyclerViewTouchHelper extends ItemTouchHelper.SimpleCallback {
 
@@ -61,7 +58,7 @@ public class RecyclerViewTouchHelper extends ItemTouchHelper.SimpleCallback {
 
     @Override
     public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+        /*new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                 .addSwipeLeftBackgroundColor(ContextCompat.getColor(adapter.getContext(), R.color.secondary))
                 .addSwipeLeftActionIcon(R.drawable.edit)
                 .addSwipeRightBackgroundColor(Color.RED)
@@ -69,6 +66,6 @@ public class RecyclerViewTouchHelper extends ItemTouchHelper.SimpleCallback {
                 .create()
                 .decorate();
 
-        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);*/
     }
 }

@@ -16,6 +16,7 @@ import com.example.travel_tales.databinding.ActivityMapBinding;
 import com.example.travel_tales.db.DBHelper;
 import com.example.travel_tales.models.Location;
 import com.example.travel_tales.utility.NotificationUtility;
+import com.example.travel_tales.utility.SharedPreferencesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,6 +42,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private List<Location> userLocationList;
     private boolean isInitialMapView;
 
+    private static int userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +51,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mapBinding = ActivityMapBinding.inflate(getLayoutInflater());
         View ui = mapBinding.getRoot();
         setContentView(ui);
+
+        userId = SharedPreferencesUtil.getUserId(getApplicationContext());
         init();
         registerEventListeners();
     }
@@ -68,7 +73,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         geocoder = new Geocoder(this);
 
         isInitialMapView = true;
-        //mapBinding.mapView.setVisibility(View.GONE); //todo remove this later
     }
 
     private void registerEventListeners() {
@@ -87,19 +91,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
-        //todo - remove this later
-        /*runOnUiThread(() -> {
-            this.mapBinding.progressBar.setVisibility(View.VISIBLE);
-            this.mapBinding.mapView.setVisibility(View.GONE);
-        });*/
-
         LatLng firstLocation = null;
 
         // If it's the initial map view, fetching user locations and add markers
         if (isInitialMapView) {
             try (DBHelper dbHelper = new DBHelper(getApplicationContext())) {
                 // Fetching distinct locations by user id
-                userLocationList = dbHelper.getDistinctLocationsByUserId(1); //todo - fix this later
+                userLocationList = dbHelper.getDistinctLocationsByUserId(userId); //todo - fix this later
             } catch (Exception ignore) {
             }
 
@@ -129,12 +127,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             // Animating the camera to the LatLng with a zoom level of 12
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(firstLocation, 12));
         }
-
-        //todo remove this later
-        /*runOnUiThread(() -> {
-            this.mapBinding.progressBar.setVisibility(View.GONE);
-            this.mapBinding.mapView.setVisibility(View.VISIBLE);
-        });*/
     }
 
 

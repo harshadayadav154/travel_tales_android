@@ -28,6 +28,7 @@ import com.example.travel_tales.models.Location;
 import com.example.travel_tales.utility.DateUtility;
 import com.example.travel_tales.utility.ImageUtility;
 import com.example.travel_tales.utility.NotificationUtility;
+import com.example.travel_tales.utility.SharedPreferencesUtil;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
@@ -59,6 +60,7 @@ public class AddJournalFragment extends Fragment implements View.OnClickListener
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private int userId;
 
     public AddJournalFragment() {
         // Required empty public constructor
@@ -95,6 +97,8 @@ public class AddJournalFragment extends Fragment implements View.OnClickListener
                              Bundle savedInstanceState) {
         binding = FragmentAddJournalBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
+
+        userId = SharedPreferencesUtil.getUserId(getActivity().getApplicationContext());
 
         initializeComponents();
         registerEventListeners();
@@ -273,7 +277,7 @@ public class AddJournalFragment extends Fragment implements View.OnClickListener
         searchLocation(); // Searching for location coordinates
 
         JournalEntry journalEntry = new JournalEntry();
-        journalEntry.setUserId(1); //todo - fix this later
+        journalEntry.setUserId(userId); //todo - fix this later
         journalEntry.setTitle(Objects.requireNonNull(binding.editTextTitle.getText()).toString().trim());
         journalEntry.setDescription(Objects.requireNonNull(binding.editTextDescription.getText()).toString().trim());
         journalEntry.setDate(DateUtility.parseStringToDate(Objects.requireNonNull(binding.editTextDate.getText()).toString()));

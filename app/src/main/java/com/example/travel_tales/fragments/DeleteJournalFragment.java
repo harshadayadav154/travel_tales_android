@@ -17,6 +17,7 @@ import com.example.travel_tales.db.DBHelper;
 import com.example.travel_tales.models.JournalEntry;
 import com.example.travel_tales.models.JournalMini;
 import com.example.travel_tales.utility.NotificationUtility;
+import com.example.travel_tales.utility.SharedPreferencesUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +37,7 @@ public class DeleteJournalFragment extends Fragment implements AdapterView.OnIte
     private String mParam2;
     private DBHelper dbHelper;
     private JournalMini selectedJournal;
+    private int userId;
 
     public DeleteJournalFragment() {
         // Required empty public constructor
@@ -72,6 +74,8 @@ public class DeleteJournalFragment extends Fragment implements AdapterView.OnIte
                              Bundle savedInstanceState) {
         binding = FragmentDeleteJournalBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
+
+        userId= SharedPreferencesUtil.getUserId(getContext());
 
         initializeComponents();
         registerEventListeners();
@@ -128,7 +132,7 @@ public class DeleteJournalFragment extends Fragment implements AdapterView.OnIte
      * Retrieves journal entries from the database and populates the spinner with journal titles.
      */
     private void updateSpinner() {
-        List<JournalEntry> journalEntries = dbHelper.getAllJournalsByUserId(1); //todo - replace 1 with the actual user ID
+        List<JournalEntry> journalEntries = dbHelper.getAllJournalsByUserId(userId); //todo - replace 1 with the actual user ID
         List<JournalMini> journalItems = journalEntries.stream()
                 .map(x -> new JournalMini(x.getId(), x.getTitle())).collect(Collectors.toList());
         ArrayAdapter<JournalMini> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, journalItems);
